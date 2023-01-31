@@ -32,6 +32,8 @@ class depthDatasetMemory(Dataset):
             depth = depth /255.0 * 10.0 #From 8bit to range [0, 10] (meter)
         elif self.split == 'val':
             depth = depth * 0.001
+        elif self.split == 'test': # mesma coisa do val
+            depth = depth /1000
 
         sample = {'image': image, 'depth': depth}
         if self.transform:
@@ -93,9 +95,9 @@ def loadZipToMem(zip_file):
     nyu2_train = list((row.split(',') for row in (data['data/nyu2_train.csv']).decode("utf-8").split('\n') if len(row) > 0))
     nyu2_test = list((row.split(',') for row in (data['data/nyu2_test.csv']).decode("utf-8").split('\n') if len(row) > 0))
 
-    #Debugging
-    #if True: nyu2_train = nyu2_train[:100]
-    #if True: nyu2_test = nyu2_test[:100]
+    # # Debugging
+    # if True: nyu2_train = nyu2_train[:100]
+    # if True: nyu2_test = nyu2_test[:100]
 
     print('Loaded (Train Images: {0}, Test Images: {1}).'.format(len(nyu2_train), len(nyu2_test)))
     return data, nyu2_train, nyu2_test
@@ -131,9 +133,13 @@ def get_NYU_dataset(zip_path, split, resolution='full', uncompressed=False):
         transform = val_transform(resolution)
         dataset = depthDatasetMemory(data, split, nyu2_test, transform=transform)
     elif split == 'test':
-        if uncompressed:
-            dataset = NYU_Testset_Extracted(zip_path)
-        else:
-            dataset = NYU_Testset(zip_path)
+        # if uncompressed:
+        #     dataset = NYU_Testset_Extracted(zip_path)
+        # else:
+        #     dataset = NYU_Testset(zip_path)
+        data, nyu2_train, nyu2_test = loadZipToMem(zip_path)
+
+        transform = val_transform(resolution)
+        dataset = depthDatasetMemory(data, split, nyu2_test, transform=transform)
 
     return dataset

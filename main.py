@@ -11,7 +11,7 @@ def get_args():
 
     #Mode
     parser.set_defaults(train=False)
-    parser.set_defaults(evaluate=False)
+    parser.set_defaults(evaluate=True)
     parser.add_argument('--train',
                         dest='train',
                         action='store_true')
@@ -23,16 +23,16 @@ def get_args():
     parser.add_argument('--data_path',
                         type=str,
                         help='path to train data',
-                        default=os.path.join(file_dir, 'kitti_comb'))
+                        default="./nyudata/CSVdata.zip")#os.path.join(file_dir, 'kitti_comb'))
     parser.add_argument('--test_path',
                         type=str,
                         help='path to test data',
-                        default=os.path.join(file_dir, 'kitti_comb'))
+                        default="./nyudata/CSVdata.zip") #os.path.join(file_dir, 'kitti_comb'))
     parser.add_argument('--dataset',
                         type=str,
                         help='dataset for training',
                         choices=['kitti', 'nyu', 'nyu_reduced'],
-                        default='kitti')
+                        default='nyu_reduced')
     parser.add_argument('--resolution',
                         type=str,
                         help='Resolution of the images for training',
@@ -49,10 +49,12 @@ def get_args():
     parser.add_argument('--model',
                         type=str,
                         help='name of the model to be trained',
-                        default='UpDepth')
+                        default='GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
-                        help='path to model weights')
+                        help='path to model weights',
+                        default="./results/best_model.pth"
+                        )
 
     #Checkpoint
     parser.add_argument('--load_checkpoint',
@@ -72,7 +74,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=8)
+                        default=16)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',
@@ -90,7 +92,7 @@ def get_args():
     parser.add_argument('--num_workers',
                         type=int,
                         help='number of dataloader workers',
-                        default=2)
+                        default=0)
 
 
     return parser.parse_args()
@@ -111,3 +113,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+"""
+python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "half" --eval_mode "alhashim" --model "GuideDepth-S" --batch_size 32 --num_workers 0
+"""

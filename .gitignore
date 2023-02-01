@@ -1,0 +1,10 @@
+
+*.pth
+
+__pycache__/
+
+*.png
+
+.vscode/
+
+*.txt

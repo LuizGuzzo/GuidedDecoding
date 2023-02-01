@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 
 from model.GuideDepth import GuideDepth
+from model.model_mobileV3_Unet_interpolado_small import PTModel
 
 def load_model(model_name, weights_pth):
     model = model_builder(model_name)
@@ -17,6 +18,8 @@ def model_builder(model_name):
         return GuideDepth(True)
     if model_name == 'GuideDepth-S':
         return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
+    if model_name == 'MobileNetV3':
+        return PTModel()
 
     print("Invalid model")
     exit(0)

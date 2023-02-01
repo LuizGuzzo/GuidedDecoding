@@ -217,7 +217,7 @@ class Evaluater():
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        ax.imshow(img)
+        # ax.imshow(img)
         fig.savefig(save_to_dir)
         plt.clf()
 
@@ -236,7 +236,7 @@ class Evaluater():
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        ax.imshow(gt, vmin=vmin, vmax=vmax, cmap=cmap)
+        # ax.imshow(gt, vmin=vmin, vmax=vmax, cmap=cmap)
         fig.savefig(save_to_dir)
         plt.clf()
 
@@ -245,6 +245,6 @@ class Evaluater():
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        ax.imshow(prediction, vmin=vmin, vmax=vmax, cmap=cmap)
+        # ax.imshow(prediction, vmin=vmin, vmax=vmax, cmap=cmap)
         fig.savefig(save_to_dir)
         plt.clf()

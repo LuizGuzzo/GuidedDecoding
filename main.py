@@ -10,7 +10,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='UpSampling for Monocular Depth Estimation')
 
     #Mode
-    parser.set_defaults(train=False)
+    parser.set_defaults(train=True)
     parser.set_defaults(evaluate=True)
     parser.add_argument('--train',
                         dest='train',
@@ -52,8 +52,8 @@ def get_args():
                         default='GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
-                        help='path to model weights',
-                        default="./results/best_model.pth"
+                        help='path to model weights'
+                        # default="./results/best_model.pth"
                         )
 
     #Checkpoint

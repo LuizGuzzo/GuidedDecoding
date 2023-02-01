@@ -10,6 +10,7 @@ from data import datasets
 from model import loader
 from metrics import AverageMeter, Result
 from data import transforms
+from tqdm import tqdm
 
 max_depths = {
     'kitti': 80.0,
@@ -60,14 +61,14 @@ class Evaluater():
         self.test_loader = datasets.get_dataloader(args.dataset,
                                                  path=args.test_path,
                                                  split='test',
-                                                 batch_size=1,
+                                                 batch_size= args.batch_size,
                                                  augmentation=args.eval_mode,
                                                  resolution=args.resolution,
                                                  workers=args.num_workers)
 
         self.downscale_image = torchvision.transforms.Resize(self.resolution) #To Model resolution
 
-        self.to_tensor = transforms.ToTensor(test=True, maxDepth=self.maxDepth)
+        # self.to_tensor = transforms.ToTensor(test=True, maxDepth=self.maxDepth)
 
 
         self.visualize_images = [0, 1, 2, 3, 4, 5,
@@ -78,17 +79,19 @@ class Evaluater():
                                  500, 501, 502, 503, 504, 505,
                                  600, 601, 602, 603, 604, 605]
 
+
     def evaluate(self):
         self.model.eval()
         average_meter = AverageMeter()
-        for i, data in enumerate(self.test_loader):
+        for i, data in enumerate(tqdm(self.test_loader)):
             t0 = time.time()
-            image, gt = data
-            packed_data = {'image': image[0], 'depth':gt[0]}
-            data = self.to_tensor(packed_data)
+            
+            # image, gt = data
+            # packed_data = {'image': data["image"][0], 'depth':data["depth"][0]}
+            # data = self.to_tensor(packed_data)
             image, gt = self.unpack_and_move(data)
-            image = image.unsqueeze(0)
-            gt = gt.unsqueeze(0)
+            # image = image.unsqueeze(0)
+            # gt = gt.unsqueeze(0)
 
             image_flip = torch.flip(image, [3])
             gt_flip = torch.flip(gt, [3])
@@ -171,6 +174,7 @@ class Evaluater():
                         average=average))
 
 
+
     def inverse_depth_norm(self, depth):
         depth = self.maxDepth / depth
         depth = torch.clamp(depth, self.maxDepth / 100, self.maxDepth)
@@ -194,6 +198,7 @@ class Evaluater():
             gt = data['depth'].to(self.device, non_blocking=True)
             return image, gt
         print('Type not supported')
+
 
     def save_image_results(self, image, gt, prediction, image_id):
         img = image[0].permute(1, 2, 0).cpu()

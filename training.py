@@ -9,10 +9,12 @@ from data import datasets
 from model import loader
 from losses import Depth_Loss
 from metrics import AverageMeter, Result
+import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 max_depths = {
     'kitti': 80.0,
-    'nyu_reduced' : 10.0,
+    'nyu_reduced' : 10.0, #cade o nyu
 }
 
 class Trainer():
@@ -89,7 +91,7 @@ class Trainer():
         self.model.train()
         accumulated_loss = 0.0
 
-        for i, data in enumerate(self.train_loader):
+        for i, data in enumerate(tqdm(self.train_loader)):
             image, gt = self.unpack_and_move(data)
             self.optimizer.zero_grad()
 
@@ -100,6 +102,7 @@ class Trainer():
             self.optimizer.step()
 
             accumulated_loss += loss_value.item()
+            
 
         #Report 
         current_time = time.strftime('%H:%M', time.localtime())
@@ -127,6 +130,7 @@ class Trainer():
 
                 if self.debug and i==0:
                     self.show_images(image, gt, prediction)
+
 
                 loss_value = self.loss_func(inv_prediction, self.depth_norm(gt))
                 accumulated_loss += loss_value.item()

@@ -37,7 +37,7 @@ def get_args():
                         type=str,
                         help='Resolution of the images for training',
                         choices=['full', 'half', 'mini', 'tu_small', 'tu_big'],
-                        default='half')
+                        default="full")#'half')
     parser.add_argument('--eval_mode',
                         type=str,
                         help='Eval mode',
@@ -49,7 +49,7 @@ def get_args():
     parser.add_argument('--model',
                         type=str,
                         help='name of the model to be trained',
-                        default='GuideDepth-S')
+                        default="MobileNetV3")#'GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
                         help='path to model weights'
@@ -74,7 +74,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=16)
+                        default=4)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',
@@ -116,5 +116,5 @@ if __name__ == '__main__':
 
 
 """
-python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "half" --eval_mode "alhashim" --model "GuideDepth-S" --batch_size 32 --num_workers 0
+python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "half" --eval_mode "alhashim" --model "GuideDepth-S" --batch_size 16 --num_workers 0
 """

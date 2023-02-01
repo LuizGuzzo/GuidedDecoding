@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 
 from model.GuideDepth import GuideDepth
-from model.model_mobileV3_Unet_interpolado_small import PTModel
+from model.SAM.model_mobileV3_large_SAM import PTModel
 
 def load_model(model_name, weights_pth):
     model = model_builder(model_name)

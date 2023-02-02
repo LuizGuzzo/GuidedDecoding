@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
-from model.SAM.newcrf_layers import NewCRF
-from model.SAM.SAM import SAM
+from model.pixelformer.newcrf_layers import NewCRF
+from model.pixelformer.SAM import SAM
 import numpy as np
 import cv2
 
@@ -123,36 +123,36 @@ class Decoder(nn.Module):
         depth2 = upsample(depth1, scale_factor=4) # [1,240,320] >> tem que ser [1,240,320]
 
 
-        # import torchvision.transforms as vtransforms
-        # imgFeatures = []
-        # imgshuffled = []
-        # imgCRFed = []
+        import torchvision.transforms as vtransforms
+        imgFeatures = []
+        imgshuffled = []
+        imgCRFed = []
 
-        # imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[3][0,0,:])))
-        # imgshuffled.append(np.array(vtransforms.ToPILImage()(bridge[0,0,:])))
-        # imgCRFed.append(np.array(vtransforms.ToPILImage()(e3[0,0,:])))
+        imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[16][0,0,:])))
+        imgshuffled.append(np.array(vtransforms.ToPILImage()(bridge[0,0,:])))
+        imgCRFed.append(np.array(vtransforms.ToPILImage()(e3[0,0,:])))
 
-        # imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[2][0,0,:])))
-        # imgshuffled.append(np.array(vtransforms.ToPILImage()(e3p[0,0,:])))
-        # imgCRFed.append(np.array(vtransforms.ToPILImage()(e2[0,0,:])))
+        imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[13][0,0,:])))
+        imgshuffled.append(np.array(vtransforms.ToPILImage()(e3p[0,0,:])))
+        imgCRFed.append(np.array(vtransforms.ToPILImage()(e2[0,0,:])))
 
-        # imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[1][0,0,:])))
-        # imgshuffled.append(np.array(vtransforms.ToPILImage()(e2p[0,0,:])))
-        # imgCRFed.append(np.array(vtransforms.ToPILImage()(e1[0,0,:])))
+        imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[7][0,0,:])))
+        imgshuffled.append(np.array(vtransforms.ToPILImage()(e2p[0,0,:])))
+        imgCRFed.append(np.array(vtransforms.ToPILImage()(e1[0,0,:])))
 
-        # imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[0][0,0,:])))
-        # imgshuffled.append(np.array(vtransforms.ToPILImage()(e1p[0,0,:])))
-        # imgCRFed.append(np.array(vtransforms.ToPILImage()(e0[0,0,:])))
+        imgFeatures.append(np.array(vtransforms.ToPILImage()(feats[4][0,0,:])))
+        imgshuffled.append(np.array(vtransforms.ToPILImage()(e1p[0,0,:])))
+        imgCRFed.append(np.array(vtransforms.ToPILImage()(e0[0,0,:])))
 
-        # # final = []
+        # final = []
         # imgshuffled.append(np.array(vtransforms.ToPILImage()(e0p[0,0,:])))
         # # final.append(np.array(vtransforms.ToPILImage()(depth1[0,:])))
         # imgCRFed.append(np.array(vtransforms.ToPILImage()(depth2[0,:])))
 
-        # cv2.imshow('imgFeatures.jpg', hconcat_resize(imgFeatures))
-        # cv2.imshow('imgshuffled.jpg', hconcat_resize(imgshuffled))
-        # cv2.imshow('imgCRFed.jpg', hconcat_resize(imgCRFed))
-        # # cv2.imshow('final.jpg', hconcat_resize(final))
+        cv2.imshow('imgFeatures.jpg', hconcat_resize(imgFeatures))
+        cv2.imshow('imgshuffled.jpg', hconcat_resize(imgshuffled))
+        cv2.imshow('imgCRFed.jpg', hconcat_resize(imgCRFed))
+        # cv2.imshow('final.jpg', hconcat_resize(final))
         
         return depth2
 

@@ -19,7 +19,7 @@ max_depths = {
 
 class Trainer():
     def __init__(self, args):
-        self.debug = True
+        self.debug = False
 
         self.checkpoint_pth = args.save_checkpoint
         self.results_pth = args.save_results

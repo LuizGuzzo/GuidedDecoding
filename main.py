@@ -49,7 +49,7 @@ def get_args():
     parser.add_argument('--model',
                         type=str,
                         help='name of the model to be trained',
-                        default="MobileNetV3")#'GuideDepth-S')
+                        default="pixelformer")#'GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
                         help='path to model weights'
@@ -74,7 +74,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=4)
+                        default=1)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',
@@ -116,5 +116,5 @@ if __name__ == '__main__':
 
 
 """
-python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "half" --eval_mode "alhashim" --model "GuideDepth-S" --batch_size 16 --num_workers 0
+python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "full" --eval_mode "alhashim" --model "MobileNetV3" --batch_size 4 --num_workers 0
 """

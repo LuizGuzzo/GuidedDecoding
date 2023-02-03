@@ -37,7 +37,7 @@ def get_args():
                         type=str,
                         help='Resolution of the images for training',
                         choices=['full', 'half', 'mini', 'tu_small', 'tu_big'],
-                        default="full")#'half')
+                        default="half")#'half')
     parser.add_argument('--eval_mode',
                         type=str,
                         help='Eval mode',
@@ -49,7 +49,7 @@ def get_args():
     parser.add_argument('--model',
                         type=str,
                         help='name of the model to be trained',
-                        default="pixelformer")#'GuideDepth-S')
+                        default="UnetMobv3")#'GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
                         help='path to model weights'
@@ -74,7 +74,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=1)
+                        default=64)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

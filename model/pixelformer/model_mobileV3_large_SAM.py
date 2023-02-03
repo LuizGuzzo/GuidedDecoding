@@ -65,7 +65,7 @@ class Decoder(nn.Module):
 
         win = 7
 
-        crf_dims = [128, 256, 512, 1024]  # canais resultantes da CRF
+        crf_dims = [128, 256, 512, 1024]  # canais resultantes da CRF - dimensao da crf
         v_dims = [64, 128, 256, 512]      # canais da imagem recebida
         in_channels = [24,40,112,160,960] # canais da feature de entrada - varia com o encoder
 

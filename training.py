@@ -115,9 +115,9 @@ class Trainer():
         self.model.eval()
         accumulated_loss = 0.0
         average_meter = AverageMeter()
-
+        print("validation Loop - Started")
         with torch.no_grad():
-            for i, data in enumerate(self.val_loader):
+            for i, data in enumerate(tqdm(self.val_loader)):
                 t0 = time.time()
                 image, gt = self.unpack_and_move(data)
                 data_time = time.time() - t0

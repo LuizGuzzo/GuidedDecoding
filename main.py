@@ -49,11 +49,11 @@ def get_args():
     parser.add_argument('--model',
                         type=str,
                         help='name of the model to be trained',
-                        default="UnetMobv3")#'GuideDepth-S')
+                        default="teste")#'GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
-                        help='path to model weights'
-                        # default="./results/best_model.pth"
+                        help='path to model weights',
+                        # default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
                         )
 
     #Checkpoint
@@ -74,7 +74,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=64)
+                        default=32)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

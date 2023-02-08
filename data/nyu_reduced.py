@@ -122,6 +122,7 @@ def val_transform(resolution):
 
 def get_NYU_dataset(zip_path, split, resolution='full', uncompressed=False):
     resolution = resolution_dict[resolution]
+    print("[",split,"] - ",end="")
     if split == 'train':
         data, nyu2_train, nyu2_test = loadZipToMem(zip_path)
 

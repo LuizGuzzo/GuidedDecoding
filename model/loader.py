@@ -1,8 +1,8 @@
 import torch.nn as nn
 import torch
 
-from model.GuideDepth import GuideDepth
-from model.model_Unet_mobileV2_Upconv import PTModel
+# from model.GuideDepth import GuideDepth
+from model.model_Unet_mobileV2_PixelShuffle import PTModel
 
 def load_model(model_name, weights_pth):
     model = model_builder(model_name)
@@ -14,10 +14,10 @@ def load_model(model_name, weights_pth):
     return model
 
 def model_builder(model_name):
-    if model_name == 'GuideDepth':
-        return GuideDepth(True)
-    if model_name == 'GuideDepth-S':
-        return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
+    # if model_name == 'GuideDepth':
+    #     return GuideDepth(True)
+    # if model_name == 'GuideDepth-S':
+    #     return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
     if model_name == "teste":
         return PTModel().cuda()
     # if model_name == 'pixelformer':

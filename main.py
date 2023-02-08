@@ -52,15 +52,16 @@ def get_args():
                         default="teste")#'GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
-                        help='path to model weights',
-                        # default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
+                        help='path to model weights'#,
+                        #default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
                         )
 
     #Checkpoint
     parser.add_argument('--load_checkpoint',
                         type=str,
                         help='path to checkpoint',
-                        default='')
+                        default=""#./checkpoints/checkpoint_19.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
+                        )
     parser.add_argument('--save_checkpoint',
                         type=str,
                         help='path to save checkpoints to',
@@ -74,7 +75,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=32)
+                        default=8)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',
@@ -116,5 +117,5 @@ if __name__ == '__main__':
 
 
 """
-python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "full" --eval_mode "alhashim" --model "MobileNetV3" --batch_size 4 --num_workers 0
+python main.py --train --eval --data_path "./nyudata/CSVdata.zip" --test_path "./nyudata/CSVdata.zip" --dataset "nyu_reduced" --resolution "full" --eval_mode "alhashim" --model "teste" --batch_size 20 --num_workers 0
 """

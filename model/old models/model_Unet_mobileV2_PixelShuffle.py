@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
+# from metrics import AverageMeter, Result
+
+#TODO: trocar o nome do .py
 
 class ConvBlock(nn.Sequential):
     def __init__(self, in_channels, out_channels):
@@ -16,37 +19,29 @@ class ConvBlock(nn.Sequential):
     def forward(self, x):        
         return self.convblock(x)
 
-
-def crop_img(source, target): # img menor , img maior (no upsampling)
-    # https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
-    diffX = target.size()[2] - source.size()[2]
-    diffY = target.size()[3] - source.size()[3]
-
-    # source = F.pad(source, [diffX // 2, diffX - diffX // 2, diffY // 2, diffY - diffY // 2])
-    # realizando o corte da imagem maior com o tamanho da img menor (proposto no paper do U-net)
-    cropped_target = target[:,:,
-                diffX//2:target.size()[2] - diffX//2,
-                diffY//2:target.size()[3] - diffY//2
-            ]
-    return cropped_target
-
-
 class Up(nn.Module):
     # upscale e convBlock
 
     def __init__(self, in_channels, out_channels):
         super().__init__()
 
-        self.up = nn.PixelShuffle(2)
-        # dobro os canais porque sera processado a concatenação de 2 imagens
-        self.conv = ConvBlock(in_channels*2, out_channels) 
+        self.up = nn.ConvTranspose2d(in_channels, in_channels, kernel_size=2, stride=2) # sobe a resolução
+        
+        self.block = ConvBlock(in_channels*2, out_channels) 
+
 
     def forward(self, input, concat_with):
 
         inter = F.interpolate(input, size=[concat_with.size(2), concat_with.size(3)], mode='bilinear', align_corners=True)
-        concat = torch.cat([inter, concat_with], dim=1)
-        x = self.conv(concat)
+        # sobel = self.sobel(concat_with)
+
+        # concat_encoder_sobel = torch.cat([concat_with, sobel], dim=1)
+        concat = torch.cat([concat_with, inter], dim=1) # acredito que a ordem não influencia
+
+        x = self.block(concat)
         return x
+    
+    
 
 # class bridge(nn.Module):
 #     def __init__(self, in_channels, out_channels):
@@ -69,6 +64,8 @@ class Up(nn.Module):
 #         x = self.trans(conv)
 #         return x
 
+
+
 class Decoder(nn.Module):
     def __init__(self):
         super(Decoder, self).__init__()
@@ -90,6 +87,7 @@ class Decoder(nn.Module):
         self.up4 = Up(in_channels=in_channels[4], out_channels=out_channels[4])
 
         self.conv = nn.ConvTranspose2d(out_channels[-1], 1, kernel_size=2, stride=2)
+
 
     def forward(self, features):
 
@@ -150,18 +148,16 @@ class Encoder(nn.Module):
         for param in backbone_nn.parameters():
             param.requires_grad = True
 
-        # print(backbone_nn)
-        # print("@@@ END BACKBONE @@@")
-
-        #backbone._modules.classifier
-        #backbone.classifier._modules
         self.original_model = backbone_nn
+
+
 
     def forward(self, x):
         features = [x]
-        for k, v in self.original_model.features._modules.items():
-            features.append( v(features[-1]) )
+        for _, module in self.original_model.features._modules.items():
+            features.append( module(features[-1]) )
         return features
+        
 
 class PTModel(nn.Module):
     def __init__(self):

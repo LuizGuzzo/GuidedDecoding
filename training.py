@@ -69,6 +69,7 @@ class Trainer():
 
         #Load Checkpoint
         if args.load_checkpoint != '':
+            print("Using checkpoint at: ",args.load_checkpoint)
             self.load_checkpoint(args.load_checkpoint)
 
     def train(self):

@@ -149,28 +149,37 @@ class Evaluater():
         current_time = time.strftime('%H:%M', time.localtime())
         self.save_results(avg)
         print('\n*\n'
+              'MSE={average.mse:.3f}\n'
               'RMSE={average.rmse:.3f}\n'
               'MAE={average.mae:.3f}\n'
+              'REL={average.absrel:.3f}\n' # é o absrel
+              'RMSE_log={average.rmse_log:.3f}\n'
+              'Lg10={average.lg10:.3f}\n'
+              'IRMSE={average.irmse:.3f}\n'
+              'IMAE={average.imae:.3f}\n'
               'Delta1={average.delta1:.3f}\n'
               'Delta2={average.delta2:.3f}\n'
               'Delta3={average.delta3:.3f}\n'
-              'REL={average.absrel:.3f}\n'
-              'Lg10={average.lg10:.3f}\n'
-              't_GPU={time:.3f}\n'.format(
-              average=avg, time=avg.gpu_time))
+              't_GPU={average.gpu_time:.3f}\n'.format(
+              average=avg))
+              
 
     def save_results(self, average):
         results_file = os.path.join(self.result_dir, 'results.txt')
         with open(results_file, 'w') as f:
-            f.write('RMSE,MAE,REL, RMSE_log,Lg10,Delta1,Delta2,Delta3\n')
-            f.write('{average.rmse:.3f}'
+            f.write('MSE,RMSE,MAE,REL,RMSE_log,Lg10,IRMSE,IMAE,Delta1,Delta2,Delta3,t_GPU\n')
+            f.write('{average.mse:.3f}'
+                    ',{average.rmse:.3f}'
                     ',{average.mae:.3f}'
-                    ',{average.absrel:.3f}'
+                    ',{average.absrel:.3f}' # é o absrel
                     ',{average.rmse_log:.3f}'
                     ',{average.lg10:.3f}'
+                    ',{average.irmse:.3f}'
+                    ',{average.imae:.3f}'
                     ',{average.delta1:.3f}'
                     ',{average.delta2:.3f}'
-                    ',{average.delta3:.3f}'.format(
+                    ',{average.delta3:.3f}'
+                    ',{average.gpu_time:.3f}'.format(
                         average=average))
 
 

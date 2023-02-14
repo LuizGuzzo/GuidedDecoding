@@ -148,14 +148,18 @@ class Trainer():
         print('{} - Average Validation Loss: {:3.4f}'.format(current_time, average_loss))
 
         print('\n*\n'
+              'MSE={average.mse:.3f}\n'
               'RMSE={average.rmse:.3f}\n'
               'MAE={average.mae:.3f}\n'
+              'REL={average.absrel:.3f}\n' # é o absrel
+              'RMSE_log={average.rmse_log:.3f}\n'
+              'Lg10={average.lg10:.3f}\n'
+              'IRMSE={average.irmse:.3f}\n'
+              'IMAE={average.imae:.3f}\n'
               'Delta1={average.delta1:.3f}\n'
               'Delta2={average.delta2:.3f}\n'
               'Delta3={average.delta3:.3f}\n'
-              'REL={average.absrel:.3f}\n'
-              'Lg10={average.lg10:.3f}\n'
-              't_GPU={time:.3f}\n'.format(
+              't_GPU={average.gpu_time:.3f}\n'.format(
               average=avg, time=avg.gpu_time))
 
 

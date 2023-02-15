@@ -10,7 +10,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='UpSampling for Monocular Depth Estimation')
 
     #Mode
-    parser.set_defaults(train=False)
+    parser.set_defaults(train=True)
     parser.set_defaults(evaluate=True)
     parser.add_argument('--train',
                         dest='train',
@@ -75,7 +75,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=8)
+                        default=6)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

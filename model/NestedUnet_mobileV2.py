@@ -3,6 +3,8 @@ import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
 
+#codigo base: https://github.com/4uiiurz1/pytorch-nested-unet/blob/557ea02f0b5d45ec171aae2282d2cd21562a633e/archs.py
+
 class ConvBlock(nn.Sequential):
     def __init__(self, in_channels, middle_channels, out_channels):
         super(ConvBlock, self).__init__()
@@ -37,7 +39,7 @@ class VGGBlock(nn.Module):
         return out
 
 #                        bz, ch, hi, wi
-# feature[0]: torch.Size([32, 3, 240, 320])
+# feature[0]: torch.Size([32, 3, 240, 320]) - 
 # feature[1]: torch.Size([32, 32, 120, 160])
 # feature[2]: torch.Size([32, 16, 120, 160])-
 # feature[3]: torch.Size([32, 24, 60, 80])  
@@ -98,7 +100,7 @@ class NestedUNet(nn.Module):
 
         # in_channels = [1280,96,32,24,16]
         # nb_filter = [32, 64, 128, 256, 512]
-        nb_filter = [16,24,32,96,1280] # troca para ser 320 em vez de 1280
+        nb_filter = [3,16,24,32,96,1280] # troca para ser 320 em vez de 1280
 
         self.deep_supervision = deep_supervision
 
@@ -107,40 +109,36 @@ class NestedUNet(nn.Module):
 
         self.encoder = Encoder()
 
-        # self.conv0_0 = VGGBlock(input_channels, nb_filter[0], nb_filter[0])
-        # self.conv1_0 = VGGBlock(nb_filter[0], nb_filter[1], nb_filter[1])
-        # self.conv2_0 = VGGBlock(nb_filter[1], nb_filter[2], nb_filter[2])
-        # self.conv3_0 = VGGBlock(nb_filter[2], nb_filter[3], nb_filter[3])
-        # self.conv4_0 = VGGBlock(nb_filter[3], nb_filter[4], nb_filter[4])
 
         self.conv0_1 = ConvBlock(nb_filter[0]+nb_filter[1], nb_filter[0], nb_filter[0])
         self.conv1_1 = ConvBlock(nb_filter[1]+nb_filter[2], nb_filter[1], nb_filter[1])
         self.conv2_1 = ConvBlock(nb_filter[2]+nb_filter[3], nb_filter[2], nb_filter[2])
         self.conv3_1 = ConvBlock(nb_filter[3]+nb_filter[4], nb_filter[3], nb_filter[3])
+        self.conv4_1 = ConvBlock(nb_filter[4]+nb_filter[5], nb_filter[4], nb_filter[4])
 
         self.conv0_2 = ConvBlock(nb_filter[0]*2+nb_filter[1], nb_filter[0], nb_filter[0])
         self.conv1_2 = ConvBlock(nb_filter[1]*2+nb_filter[2], nb_filter[1], nb_filter[1])
         self.conv2_2 = ConvBlock(nb_filter[2]*2+nb_filter[3], nb_filter[2], nb_filter[2])
+        self.conv3_2 = ConvBlock(nb_filter[3]*2+nb_filter[4], nb_filter[3], nb_filter[3])
 
         self.conv0_3 = ConvBlock(nb_filter[0]*3+nb_filter[1], nb_filter[0], nb_filter[0])
         self.conv1_3 = ConvBlock(nb_filter[1]*3+nb_filter[2], nb_filter[1], nb_filter[1])
+        self.conv2_3 = ConvBlock(nb_filter[2]*3+nb_filter[3], nb_filter[2], nb_filter[2])
 
         self.conv0_4 = ConvBlock(nb_filter[0]*4+nb_filter[1], nb_filter[0], nb_filter[0])
+        self.conv1_4 = ConvBlock(nb_filter[1]*4+nb_filter[2], nb_filter[1], nb_filter[1])
 
-        if self.deep_supervision:
-            self.final1 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final2 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final3 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final4 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-        else:
-            self.final = nn.ConvTranspose2d(nb_filter[0], num_classes, kernel_size=2, stride=2)
+        self.conv0_5 = ConvBlock(nb_filter[0]*5+nb_filter[1], nb_filter[0], nb_filter[0])
+
+        # self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+        self.final = ConvBlock(nb_filter[0], num_classes, num_classes)
 
 
     def forward(self, input):
 
         features = self.encoder(input)
 
-        feats = [features[2],features[4],features[7],features[14],features[19]]
+        feats = [features[0],features[2],features[4],features[7],features[14],features[19]]
 
         x0_0 = feats[0]
 
@@ -162,5 +160,12 @@ class NestedUNet(nn.Module):
         x1_3 = self.conv1_3(self.upConcat(x2_2,[x1_0, x1_1, x1_2]))
         x0_4 = self.conv0_4(self.upConcat(x1_3,[x0_0, x0_1, x0_2, x0_3]))
 
-        output = self.final(x0_4)
+        x5_0 = feats[5]
+        x4_1 = self.conv4_1(self.upConcat(x5_0,[x4_0]))
+        x3_2 = self.conv3_2(self.upConcat(x4_1,[x3_0, x3_1]))
+        x2_3 = self.conv2_3(self.upConcat(x3_2,[x2_0, x2_1, x2_2]))
+        x1_4 = self.conv1_4(self.upConcat(x2_3,[x1_0, x1_1, x1_2, x1_3]))
+        x0_5 = self.conv0_5(self.upConcat(x1_4,[x0_0, x0_1, x0_2, x0_3, x0_4]))
+
+        output = self.final(x0_5)
         return output

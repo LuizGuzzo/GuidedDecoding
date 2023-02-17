@@ -75,7 +75,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=6)
+                        default=2)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

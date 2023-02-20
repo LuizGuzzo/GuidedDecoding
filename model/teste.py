@@ -64,27 +64,27 @@ class ResidualAdd(nn.Module):
 
 from torch import nn
 
-# class BottleNeck(nn.Sequential):
-#     def __init__(self, in_features: int, out_features: int, reduction: int = 4):
-#         reduced_features = out_features // reduction
-#         super().__init__(
-#             nn.Sequential(
-#                 ResidualAdd(
-#                     nn.Sequential(
-#                         # wide -> narrow
-#                         Conv1X1BnReLU(in_features, reduced_features),
-#                         # narrow -> narrow
-#                         Conv3X3BnReLU(reduced_features, reduced_features),
-#                         # narrow -> wide
-#                         Conv1X1BnReLU(reduced_features, out_features, act=nn.Identity),
-#                     ),
-#                     shortcut=Conv1X1BnReLU(in_features, out_features)
-#                     if in_features != out_features
-#                     else None,
-#                 ),
-#                 nn.ReLU(),
-#             )
-#         )
+class BottleNeck(nn.Sequential):
+    def __init__(self, in_features: int, out_features: int, reduction: int = 4):
+        reduced_features = out_features // reduction
+        super().__init__(
+            nn.Sequential(
+                ResidualAdd(
+                    nn.Sequential(
+                        # wide -> narrow
+                        Conv1X1BnReLU(in_features, reduced_features),
+                        # narrow -> narrow
+                        Conv3X3BnReLU(reduced_features, reduced_features),
+                        # narrow -> wide
+                        Conv1X1BnReLU(reduced_features, out_features, act=nn.Identity),
+                    ),
+                    shortcut=Conv1X1BnReLU(in_features, out_features)
+                    if in_features != out_features
+                    else None,
+                ),
+                nn.ReLU(), # troca para leakyRelu
+            )
+        )
 
 
 # class InvertedResidual(nn.Sequential):
@@ -182,7 +182,7 @@ class FusedMBConv(nn.Sequential):
                         Conv1X1BnReLU(expanded_features, out_features, act=nn.Identity),
                     ),
                 ),
-                nn.LeakyReLU(0.2),
+                nn.ReLU(),
             )
         )
         

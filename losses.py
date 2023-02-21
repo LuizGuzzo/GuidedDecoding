@@ -9,6 +9,9 @@ https://github.com/ialhashim/DenseDepth
 
 import torch
 import torch.nn.functional as F
+from torch import mul
+import torch.nn as nn
+from torch import log as thLog
 
 from math import exp
 
@@ -125,3 +128,34 @@ class Depth_Loss():
     def gaussian(self, window_size, sigma):
         gauss = torch.Tensor([exp(-(x - window_size//2)**2/float(2*sigma**2)) for x in range(window_size)])
         return gauss/gauss.sum()
+
+
+class LainaBerHuLoss(nn.Module):
+    # Based on Laina et al.
+
+    def __init__(self, size_average=True, use_logs=True, clamp_val=1e-9):
+        super(LainaBerHuLoss, self).__init__()
+        self.size_average = size_average
+        self.use_log = use_logs
+        self.clamp_val = clamp_val
+
+    def forward(self, input, target, mask):
+        if self.use_log:
+            n = thLog(input.clamp(min=self.clamp_val)) - thLog(target.clamp(min=self.clamp_val))
+        else:
+            n = input - target
+
+        n = torch.abs(n)
+        n = mul(n, mask)
+
+        n = n.squeeze(1)
+        c = 0.2 * n.max()
+        cond = n < c
+        loss = torch.where(cond, n, (n ** 2 + c ** 2) / (2 * c + 1e-9))
+
+        loss = loss.sum()
+
+        if self.size_average:
+            return loss / mask.sum()
+
+        return loss

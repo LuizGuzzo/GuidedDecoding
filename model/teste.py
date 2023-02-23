@@ -63,10 +63,11 @@ class ResidualAdd(nn.Module):
 
 
 from torch import nn
+import math
 
 class BottleNeck(nn.Sequential):
     def __init__(self, in_features: int, out_features: int, reduction: int = 4):
-        reduced_features = out_features // reduction
+        reduced_features = math.ceil(out_features / reduction)
         super().__init__(
             nn.Sequential(
                 ResidualAdd(
@@ -82,7 +83,7 @@ class BottleNeck(nn.Sequential):
                     if in_features != out_features
                     else None,
                 ),
-                nn.ReLU(), # troca para leakyRelu
+                nn.LeakyReLU(0.2), # troca para Relu
             )
         )
 
@@ -186,3 +187,49 @@ class FusedMBConv(nn.Sequential):
             )
         )
         
+# import torch
+# import torch.nn as nn
+
+# class PEM(nn.Module):
+#     def __init__(self, in_channels, out_channels):
+#         super(PEM, self).__init__()
+#         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
+#         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1)
+
+#     def forward(self, x, edge):
+#         # Apply convolution to the input feature maps
+#         x = self.conv1(x)
+#         x = nn.functional.relu(x)
+#         x = self.conv2(x)
+#         x = nn.functional.relu(x)
+
+#         # Upsample the edge maps and concatenate with the feature maps
+#         edge = nn.functional.interpolate(edge, size=x.shape[2:], mode='nearest')
+#         x = torch.cat([x, edge], dim=1)
+
+#         return x
+
+# class EAM(nn.Module):
+#     def __init__(self, in_channels):
+#         super(EAM, self).__init__()
+#         self.conv1 = nn.Conv2d(in_channels, in_channels, kernel_size=1)
+#         self.conv_h = nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1)
+#         self.conv_v = nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1)
+
+#     def forward(self, x, edge):
+#         # Apply convolution to the input feature maps
+#         x = self.conv1(x)
+
+#         # Generate horizontal and vertical edge attention maps
+#         edge_h = self.conv_h(edge)
+#         edge_v = self.conv_v(edge)
+
+#         # Apply attention maps to the feature maps
+#         x_h = x * edge_h
+#         x_v = x * edge_v
+
+#         # Concatenate the attention maps and output
+#         x = torch.cat([x_h, x_v], dim=1)
+#         x = self.conv1(x)
+
+#         return x

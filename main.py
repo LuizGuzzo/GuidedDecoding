@@ -37,7 +37,7 @@ def get_args():
                         type=str,
                         help='Resolution of the images for training',
                         choices=['full', 'half', 'mini', 'tu_small', 'tu_big'],
-                        default="full")#'half')
+                        default="half")#'half')
     parser.add_argument('--eval_mode',
                         type=str,
                         help='Eval mode',

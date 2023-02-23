@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from .teste import *
 
 
 class ConvBlock(nn.Sequential):
@@ -12,6 +12,18 @@ class ConvBlock(nn.Sequential):
             nn.LeakyReLU(0.2),
             nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.2)
+        )
+        
+    def forward(self, x):        
+        return self.convblock(x)
+
+class ConvBlock_BottleNeck(nn.Sequential):
+    def __init__(self, in_channels, out_channels):
+        super(ConvBlock_BottleNeck, self).__init__()
+        self.convblock = nn.Sequential(
+            BottleNeck(in_channels, out_channels),
+            BottleNeck(out_channels, out_channels)
+            # nn.LeakyReLU(0.2)
         )
         
     def forward(self, x):        

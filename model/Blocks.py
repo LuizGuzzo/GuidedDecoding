@@ -21,8 +21,8 @@ class ConvBlock_BottleNeck(nn.Sequential):
     def __init__(self, in_channels, out_channels):
         super(ConvBlock_BottleNeck, self).__init__()
         self.convblock = nn.Sequential(
-            BottleNeck(in_channels, out_channels),
-            BottleNeck(out_channels, out_channels)
+            MobileNetLikeBlock(in_channels, out_channels),
+            MobileNetLikeBlock(out_channels, out_channels)
             # nn.LeakyReLU(0.2)
         )
         

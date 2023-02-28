@@ -75,7 +75,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=6)
+                        default=16)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',
@@ -111,6 +111,8 @@ def main():
     if args.evaluate:
         evaluation_module = Evaluater(args)
         evaluation_module.evaluate()
+
+    print("batch_size:",args.batch_size)
 
 if __name__ == '__main__':
     main()

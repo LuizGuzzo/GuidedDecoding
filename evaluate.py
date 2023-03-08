@@ -53,7 +53,7 @@ class Evaluater():
         if not os.path.isdir(self.result_dir):
             os.mkdir(self.result_dir)
 
-        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu') # torch.device("cpu")
 
         self.model = loader.load_model(args.model, args.weights_path)
         self.model.to(self.device)

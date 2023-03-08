@@ -8,27 +8,22 @@ from .teste import *
 #codigo base: https://github.com/4uiiurz1/pytorch-nested-unet/blob/557ea02f0b5d45ec171aae2282d2cd21562a633e/archs.py
 
 
-#                        bz, ch, hi, wi
-# feature[0]: torch.Size([32, 3, 240, 320]) 
-# feature[1]: torch.Size([32, 32, 120, 160])
-# feature[2]: torch.Size([32, 16, 120, 160])
-# feature[3]: torch.Size([32, 24, 60, 80])  
-# feature[4]: torch.Size([32, 24, 60, 80])-  
-# feature[5]: torch.Size([32, 32, 30, 40])  
-# feature[6]: torch.Size([32, 32, 30, 40])  
-# feature[7]: torch.Size([32, 32, 30, 40])-  
-# feature[8]: torch.Size([32, 64, 15, 20])
-# feature[9]: torch.Size([32, 64, 15, 20])
-# feature[10]: torch.Size([32, 64, 15, 20])
-# feature[11]: torch.Size([32, 64, 15, 20])-
-# feature[12]: torch.Size([32, 96, 15, 20])
-# feature[13]: torch.Size([32, 96, 15, 20])
-# feature[14]: torch.Size([32, 96, 15, 20])-
-# feature[15]: torch.Size([32, 160, 8, 10])
-# feature[16]: torch.Size([32, 160, 8, 10])
-# feature[17]: torch.Size([32, 160, 8, 10])
-# feature[18]: torch.Size([32, 320, 8, 10])
-# feature[19]: torch.Size([32, 1280, 8, 10])- 
+#                        bz, ch, he, wi
+# feature[0]: torch.Size([10, 3, 240, 320])
+# feature[1]: torch.Size([10, 16, 120, 160])
+# feature[2]: torch.Size([10, 16, 60, 80])-
+# feature[3]: torch.Size([10, 24, 30, 40])-
+# feature[4]: torch.Size([10, 24, 30, 40])
+# feature[5]: torch.Size([10, 40, 15, 20])
+# feature[6]: torch.Size([10, 40, 15, 20])
+# feature[7]: torch.Size([10, 40, 15, 20])
+# feature[8]: torch.Size([10, 48, 15, 20])-
+# feature[9]: torch.Size([10, 48, 15, 20])
+# feature[10]: torch.Size([10, 96, 8, 10])-
+# feature[11]: torch.Size([10, 96, 8, 10])
+# feature[12]: torch.Size([10, 96, 8, 10])
+# feature[13]: torch.Size([10, 576, 8, 10])-
+
 
 def concat(input, concat_with):
     inter = F.interpolate(input, size=[concat_with[0].size(2), concat_with[0].size(3)], mode='bilinear', align_corners=True)
@@ -39,10 +34,8 @@ def concat(input, concat_with):
 class NestedUNet(nn.Module):
     def __init__(self, num_classes=1, input_channels=3, **kwargs):
         super().__init__()
-
-        # in_channels = [1280,96,32,24,16]
-        # nb_filter = [32, 64, 128, 256, 512]
-        nb_filter = [24,32,64,96,1280] # troca para ser 320 em vez de 1280
+        
+        nb_filter = [16,24,48,96,576]
        
         # self.upConcat = Up_concat()
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
@@ -104,8 +97,8 @@ class NestedUNet(nn.Module):
     def forward(self, input):
 
         features = self.encoder(input)
-
-        feats = [features[4],features[7],features[11],features[14],features[19]]
+        
+        feats = [features[2],features[3],features[8],features[10],features[13]]
 
         #U-net normal
         # x = self.conv5(self.upConcat(feats[5],[feats[4]]))

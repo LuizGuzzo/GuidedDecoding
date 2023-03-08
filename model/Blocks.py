@@ -9,7 +9,7 @@ class ConvBlock(nn.Sequential):
         super(ConvBlock, self).__init__()
         self.convblock = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1),
-            nn.LeakyReLU(0.2),
+            nn.LeakyReLU(0.2), # nn.Hardswish() é oque o mobile usa
             nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.2)
         )

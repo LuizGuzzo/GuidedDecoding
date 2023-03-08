@@ -10,16 +10,16 @@ from .teste import *
 
 #                        bz, ch, he, wi
 # feature[0]: torch.Size([10, 3, 240, 320])
-# feature[1]: torch.Size([10, 16, 120, 160])
+# feature[1]: torch.Size([10, 16, 120, 160])-
 # feature[2]: torch.Size([10, 16, 60, 80])-
-# feature[3]: torch.Size([10, 24, 30, 40])-
-# feature[4]: torch.Size([10, 24, 30, 40])
+# feature[3]: torch.Size([10, 24, 30, 40])
+# feature[4]: torch.Size([10, 24, 30, 40])-
 # feature[5]: torch.Size([10, 40, 15, 20])
 # feature[6]: torch.Size([10, 40, 15, 20])
 # feature[7]: torch.Size([10, 40, 15, 20])
-# feature[8]: torch.Size([10, 48, 15, 20])-
-# feature[9]: torch.Size([10, 48, 15, 20])
-# feature[10]: torch.Size([10, 96, 8, 10])-
+# feature[8]: torch.Size([10, 48, 15, 20])
+# feature[9]: torch.Size([10, 48, 15, 20])-
+# feature[10]: torch.Size([10, 96, 8, 10])
 # feature[11]: torch.Size([10, 96, 8, 10])
 # feature[12]: torch.Size([10, 96, 8, 10])
 # feature[13]: torch.Size([10, 576, 8, 10])-
@@ -35,7 +35,7 @@ class NestedUNet(nn.Module):
     def __init__(self, num_classes=1, input_channels=3, **kwargs):
         super().__init__()
         
-        nb_filter = [16,24,48,96,576]
+        nb_filter = [16,16,24,48,576]
        
         # self.upConcat = Up_concat()
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
@@ -51,17 +51,8 @@ class NestedUNet(nn.Module):
         
         # self.final = ConvBlock_BottleNeck(nb_filter[0], num_classes)
 
-        # feature[4]
-        # feature[7]
-        # feature[11]
-        # feature[14]
-        # feature[19]
 
-        # ([32, 24, 60, 80])
-        # ([32, 32, 30, 40])
-        # ([32, 64, 15, 20])
-        # ([32, 96, 15, 20])
-        # ([32, 1280, 8, 10])
+
 
         self.conv0_1 = ConvBlock(nb_filter[0]+nb_filter[1], nb_filter[0])
         self.conv1_1 = ConvBlock(nb_filter[1]+nb_filter[2], nb_filter[1])
@@ -87,7 +78,7 @@ class NestedUNet(nn.Module):
         # self.final = ConvBlock(nb_filter[0], num_classes)
 
         self.final = nn.Sequential(
-            self.up,
+            # self.up,
             self.up,
             ConvBlock(nb_filter[0], num_classes)
         )
@@ -98,7 +89,7 @@ class NestedUNet(nn.Module):
 
         features = self.encoder(input)
         
-        feats = [features[2],features[3],features[8],features[10],features[13]]
+        feats = [features[1],features[2],features[4],features[9],features[13]]
 
         #U-net normal
         # x = self.conv5(self.upConcat(feats[5],[feats[4]]))
@@ -109,17 +100,7 @@ class NestedUNet(nn.Module):
         # output = self.final(x)
 
 
-        # feature[4]
-        # feature[7]
-        # feature[11]
-        # feature[14]
-        # feature[19]
 
-        # ([32, 24, 60, 80])
-        # ([32, 32, 30, 40])
-        # ([32, 64, 15, 20])
-        # ([32, 96, 15, 20])
-        # ([32, 1280, 8, 10])
 
         x0_0 = feats[0]
 
@@ -131,13 +112,13 @@ class NestedUNet(nn.Module):
         x0_2 = self.conv0_2(concat(self.up(x1_1),[x0_0, x0_1]))
 
         x3_0 = feats[3]
-        x2_1 = self.conv2_1(concat(x3_0,[x2_0])) # apenas concat porque são da mesma resolução
+        x2_1 = self.conv2_1(concat(self.up(x3_0),[x2_0]))
         x1_2 = self.conv1_2(concat(self.up(x2_1),[x1_0, x1_1]))
         x0_3 = self.conv0_3(concat(self.up(x1_2),[x0_0, x0_1, x0_2]))
 
         x4_0 = feats[4]
         x3_1 = self.conv3_1(concat(self.up(x4_0),[x3_0]))
-        x2_2 = self.conv2_2(concat(x3_1,[x2_0, x2_1])) # apenas concat porque são da mesma resolução
+        x2_2 = self.conv2_2(concat(self.up(x3_1),[x2_0, x2_1]))
         x1_3 = self.conv1_3(concat(self.up(x2_2),[x1_0, x1_1, x1_2]))
         x0_4 = self.conv0_4(concat(self.up(x1_3),[x0_0, x0_1, x0_2, x0_3]))
 

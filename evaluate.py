@@ -104,10 +104,15 @@ class Evaluater():
 
             t0 = time.time()
 
-            inv_prediction = self.model(image)
+            # compute output
+            if self.deep_supervision:
+                inv_prediction = self.model(image)[-1]
+                inv_prediction_flip = self.model(image_flip)[-1]
+            else:
+                inv_prediction = self.model(image)
+                inv_prediction_flip = self.model(image_flip)
+                
             prediction = self.inverse_depth_norm(inv_prediction)
-
-            inv_prediction_flip = self.model(image_flip)
             prediction_flip = self.inverse_depth_norm(inv_prediction_flip)
 
             gpu_time = time.time() - t0

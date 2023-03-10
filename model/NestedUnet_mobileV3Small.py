@@ -32,8 +32,10 @@ def concat(input, concat_with):
     return concat
 
 class NestedUNet(nn.Module):
-    def __init__(self, num_classes=1, input_channels=3, **kwargs):
+    def __init__(self, num_classes=1, input_channels=3, deep_supervision=True , **kwargs):
         super().__init__()
+
+        self.deep_supervision = deep_supervision
         
         nb_filter = [3,16,16,24,48,576]
        
@@ -74,15 +76,15 @@ class NestedUNet(nn.Module):
 
         self.conv0_5 = ConvBlock(nb_filter[0]*5+nb_filter[1], nb_filter[0])
 
-        # self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-        # self.final = ConvBlock(nb_filter[0], num_classes)
 
-        self.final = nn.Sequential(
-            # self.up,
-            # self.up,
-            ConvBlock(nb_filter[0], num_classes)
-        )
-        # nn.ConvTranspose2d(nb_filter[0], num_classes, kernel_size=2, stride=2)
+        if self.deep_supervision:
+            self.final1 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+            self.final2 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+            self.final3 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+            self.final4 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+            self.final5 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+        else:
+            self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1) # point-wise
 
 
     def forward(self, input):
@@ -98,8 +100,6 @@ class NestedUNet(nn.Module):
         # x = self.conv2(self.upConcat(x,[feats[1]]))
         # x = self.conv1(self.upConcat(x,[feats[0]]))
         # output = self.final(x)
-
-
 
 
         x0_0 = feats[0]
@@ -129,6 +129,14 @@ class NestedUNet(nn.Module):
         x1_4 = self.conv1_4(concat(self.up(x2_3),[x1_0, x1_1, x1_2, x1_3]))
         x0_5 = self.conv0_5(concat(self.up(x1_4),[x0_0, x0_1, x0_2, x0_3, x0_4]))
 
-        # output = self.final(x0_4)
-        output = self.final(x0_5)
-        return output
+        if self.deep_supervision:
+            output1 = self.final1(x0_1)
+            output2 = self.final2(x0_2)
+            output3 = self.final3(x0_3)
+            output4 = self.final4(x0_4)
+            output5 = self.final5(x0_5)
+            return [output1, output2, output3, output4, output5]
+
+        else:
+            output = self.final(x0_5)
+            return output

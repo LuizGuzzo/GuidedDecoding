@@ -34,6 +34,9 @@ class Trainer():
         self.val_losses = []
         self.max_epochs = args.num_epochs
         self.maxDepth = max_depths[args.dataset]
+
+        self.deep_supervision = True
+
         print('Maximum Depth of Dataset: {}'.format(self.maxDepth))
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -98,7 +101,18 @@ class Trainer():
 
             prediction = self.model(image)
 
-            loss_value = self.loss_func(prediction, gt)
+            # compute output
+            if self.deep_supervision:
+                predictions = self.model(image)
+                loss_value = 0
+                for prediction in predictions:
+                    loss_value += self.loss_func(prediction, gt)
+                loss_value /= len(predictions)
+            else:
+                prediction = self.model(image)
+                loss_value = self.loss_func(prediction, gt)
+
+
             loss_value.backward()
             self.optimizer.step()
 
@@ -124,7 +138,13 @@ class Trainer():
                 data_time = time.time() - t0
 
                 t0 = time.time()
-                inv_prediction = self.model(image)
+
+                # compute output
+                if self.deep_supervision:
+                    inv_prediction = self.model(image)[-1]
+                else:
+                    inv_prediction = self.model(image)
+
                 prediction = self.inverse_depth_norm(inv_prediction)
                 gpu_time = time.time() - t0
 

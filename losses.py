@@ -130,32 +130,32 @@ class Depth_Loss():
         return gauss/gauss.sum()
 
 
-class LainaBerHuLoss(nn.Module):
-    # Based on Laina et al.
+# class LainaBerHuLoss(nn.Module):
+#     # Based on Laina et al.
 
-    def __init__(self, size_average=True, use_logs=True, clamp_val=1e-9):
-        super(LainaBerHuLoss, self).__init__()
-        self.size_average = size_average
-        self.use_log = use_logs
-        self.clamp_val = clamp_val
+#     def __init__(self, size_average=True, use_logs=True, clamp_val=1e-9):
+#         super(LainaBerHuLoss, self).__init__()
+#         self.size_average = size_average
+#         self.use_log = use_logs
+#         self.clamp_val = clamp_val
 
-    def forward(self, input, target, mask):
-        if self.use_log:
-            n = thLog(input.clamp(min=self.clamp_val)) - thLog(target.clamp(min=self.clamp_val))
-        else:
-            n = input - target
+#     def forward(self, input, target, mask):
+#         if self.use_log:
+#             n = thLog(input.clamp(min=self.clamp_val)) - thLog(target.clamp(min=self.clamp_val))
+#         else:
+#             n = input - target
 
-        n = torch.abs(n)
-        n = mul(n, mask)
+#         n = torch.abs(n)
+#         n = mul(n, mask)
 
-        n = n.squeeze(1)
-        c = 0.2 * n.max()
-        cond = n < c
-        loss = torch.where(cond, n, (n ** 2 + c ** 2) / (2 * c + 1e-9))
+#         n = n.squeeze(1)
+#         c = 0.2 * n.max()
+#         cond = n < c
+#         loss = torch.where(cond, n, (n ** 2 + c ** 2) / (2 * c + 1e-9))
 
-        loss = loss.sum()
+#         loss = loss.sum()
 
-        if self.size_average:
-            return loss / mask.sum()
+#         if self.size_average:
+#             return loss / mask.sum()
 
-        return loss
+#         return loss

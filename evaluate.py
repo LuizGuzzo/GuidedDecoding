@@ -49,6 +49,8 @@ class Evaluater():
         self.crop = crops[args.dataset]
         self.eval_mode = args.eval_mode
 
+        self.deep_supervision = True
+
         self.result_dir = args.save_results
         if not os.path.isdir(self.result_dir):
             os.mkdir(self.result_dir)

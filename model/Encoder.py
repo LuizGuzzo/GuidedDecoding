@@ -4,7 +4,7 @@ from torchvision import models
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        backbone_nn = models.mobilenet_v3_small( pretrained=True ) 
+        backbone_nn = models.mobilenet_v2( pretrained=True ) 
         
         print("NOT freezing backbone layers - MobileNetV3Small")
         for param in backbone_nn.parameters():

@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 
 # from model.GuideDepth import GuideDepth
-from model.NestedUnet_mobileV3Small import NestedUNet
+from model.NestedUnet_mobileV2 import NestedUNet
 
 def load_model(model_name, weights_pth):
     model = model_builder(model_name)

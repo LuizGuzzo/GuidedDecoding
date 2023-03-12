@@ -86,13 +86,13 @@ class NestedUNet(nn.Module):
 
 
         if self.deep_supervision:
-            self.final1 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final2 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final3 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final4 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final5 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+            self.final1 = ConvBlock(nb_filter[0], num_classes)
+            self.final2 = ConvBlock(nb_filter[0], num_classes)
+            self.final3 = ConvBlock(nb_filter[0], num_classes)
+            self.final4 = ConvBlock(nb_filter[0], num_classes)
+            self.final5 = ConvBlock(nb_filter[0], num_classes)
         else:
-            self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1) # point-wise
+            self.final = ConvBlock(nb_filter[0], num_classes) # point-wise
 
 
     def forward(self, input):

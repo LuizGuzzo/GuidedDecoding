@@ -18,6 +18,12 @@ def get_args():
     parser.add_argument('--eval',
                         dest='evaluate',
                         action='store_true')
+    
+    parser.set_defaults(deep_supervision=True)
+    parser.add_argument('--ds',
+                        dest='deep_supervision',
+                        action='store_true')
+    
 
     #Data
     parser.add_argument('--data_path',
@@ -52,8 +58,8 @@ def get_args():
                         default="teste")#'GuideDepth-S')
     parser.add_argument('--weights_path',
                         type=str,
-                        help='path to model weights'#,
-                        #default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
+                        help='path to model weights',
+                        default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
                         )
 
     #Checkpoint
@@ -75,7 +81,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=8)
+                        default=2)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

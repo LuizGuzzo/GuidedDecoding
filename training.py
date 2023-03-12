@@ -41,7 +41,8 @@ class Trainer():
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
         self.model = loader.load_model(args.model,
-                                  args.weights_path)
+                                  args.weights_path,
+                                  args.deep_supervision)
         self.model.to(self.device)
 
         self.train_loader = datasets.get_dataloader(args.dataset,

@@ -49,7 +49,7 @@ class Evaluater():
         self.crop = crops[args.dataset]
         self.eval_mode = args.eval_mode
 
-        self.deep_supervision = True
+        self.deep_supervision = args.deep_supervision
 
         self.result_dir = args.save_results
         if not os.path.isdir(self.result_dir):
@@ -57,7 +57,7 @@ class Evaluater():
 
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu') # torch.device("cpu")
 
-        self.model = loader.load_model(args.model, args.weights_path)
+        self.model = loader.load_model(args.model, args.weights_path, args.deep_supervision)
         self.model.to(self.device)
 
         self.test_loader = datasets.get_dataloader(args.dataset,

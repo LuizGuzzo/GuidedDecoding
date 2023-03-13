@@ -35,14 +35,14 @@ class Trainer():
         self.max_epochs = args.num_epochs
         self.maxDepth = max_depths[args.dataset]
 
-        self.deep_supervision = True
-
+        self.deep_supervision = args.deep_supervision
+        
         print('Maximum Depth of Dataset: {}'.format(self.maxDepth))
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
         self.model = loader.load_model(args.model,
                                   args.weights_path,
-                                  args.deep_supervision)
+                                  self.deep_supervision)
         self.model.to(self.device)
 
         self.train_loader = datasets.get_dataloader(args.dataset,

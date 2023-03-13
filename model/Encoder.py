@@ -6,7 +6,7 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         backbone_nn = models.mobilenet_v2( pretrained=True ) 
         
-        print("NOT freezing backbone layers - MobileNetV3Small")
+        print("NOT freezing backbone layers - MobileNetV2")
         for param in backbone_nn.parameters():
             param.requires_grad = True
 

@@ -19,7 +19,7 @@ def get_args():
                         dest='evaluate',
                         action='store_true')
     
-    parser.set_defaults(deep_supervision=True)
+    parser.set_defaults(deep_supervision=False)
     parser.add_argument('--ds',
                         dest='deep_supervision',
                         action='store_true')
@@ -108,6 +108,8 @@ def get_args():
 def main():
     args = get_args()
     print(args)
+
+    print("deep_supervision activated? : ",args.deep_supervision)
 
     if args.train:
         model_trainer = Trainer(args)

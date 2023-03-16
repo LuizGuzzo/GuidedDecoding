@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 
 # from model.GuideDepth import GuideDepth
-from model.NestedUnet_mobileV2 import NestedUNet
+from model.Unet3plus import UNet3plus
 
 def load_model(model_name, weights_pth,deep_supervision=False):
     model = model_builder(model_name,deep_supervision)
@@ -14,13 +14,18 @@ def load_model(model_name, weights_pth,deep_supervision=False):
 
     return model
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)/1000000
+
 def model_builder(model_name,deep_supervision):
     # if model_name == 'GuideDepth':
     #     return GuideDepth(True)
     # if model_name == 'GuideDepth-S':
     #     return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
     if model_name == "teste":
-        return NestedUNet(deep_supervision = deep_supervision).cuda()#.cpu()
+        modelo = UNet3plus(deep_supervision = deep_supervision).cuda()#.cpu()
+        print("Parametros da rede: %.2f M" % count_parameters(modelo))
+        return modelo
     # if model_name == 'pixelformer':
     #     return PixelFormer(version="base07", inv_depth=True, max_depth=10, 
     #     pretrained="C:/Users/luizg/Documents/repositorios/GuidedDecoding/model/weights/swin_transformer/swin_base_patch4_window7_224_22k.pth")

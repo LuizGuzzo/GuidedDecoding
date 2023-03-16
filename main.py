@@ -81,7 +81,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=4)
+                        default=2)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',
@@ -107,7 +107,7 @@ def get_args():
 
 def main():
     args = get_args()
-    print(args)
+    # print(args)
 
     print("deep_supervision activated? : ",args.deep_supervision)
 

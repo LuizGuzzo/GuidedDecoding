@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 max_depths = {
     'kitti': 80.0,
-    'nyu_reduced' : 10.0, #cade o nyu
+    'nyu_reduced' : 10.0,
 }
 
 class Trainer():

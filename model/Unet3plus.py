@@ -5,8 +5,6 @@ from .Blocks import *
 
 from .teste import *
 
-#codigo base: https://github.com/4uiiurz1/pytorch-nested-unet/blob/557ea02f0b5d45ec171aae2282d2cd21562a633e/archs.py
-
 
 #                        bz, ch, he, wi
 # feature[0]: torch.Size([16, 3, 240, 320])

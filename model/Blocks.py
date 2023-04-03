@@ -17,9 +17,7 @@ class FSA(nn.Module): # Full Scale Aggregation
     """
     def __init__(self, in_channels_list, out_channels):
         super(FSA,self).__init__()
-        self.in_channels_list = in_channels_list # a list of input channels for each tensor
-        self.out_channels = out_channels # the number of output channels after point-wise convolution
-        self.fuse_layer = nn.Conv2d(sum(in_channels_list), out_channels , kernel_size=1) # point-wise convolution layer
+        self.fuse_layer = nn.Conv2d(sum(in_channels_list), out_channels , kernel_size=1)
 
     def forward(self,x_list,target):
         target_size = target.size()[2:]

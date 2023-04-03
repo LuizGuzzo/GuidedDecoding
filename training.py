@@ -15,6 +15,7 @@ from tqdm import tqdm
 max_depths = {
     'kitti': 80.0,
     'nyu_reduced' : 10.0,
+    'diode' : 300
 }
 
 class Trainer():
@@ -52,13 +53,15 @@ class Trainer():
                                                  batch_size=args.batch_size,
                                                  resolution=args.resolution,
                                                  workers=args.num_workers)
-        self.val_loader = datasets.get_dataloader(args.dataset,
-                                                path=args.data_path,
-                                                split='val',
-                                                augmentation=args.eval_mode,
-                                                batch_size=args.batch_size,
-                                                resolution=args.resolution,
-                                                workers=args.num_workers)
+        self.val_loader = None
+        if args.evaluate:
+            self.val_loader = datasets.get_dataloader(args.dataset,
+                                                    path=args.data_path,
+                                                    split='val',
+                                                    augmentation=args.eval_mode,
+                                                    batch_size=args.batch_size,
+                                                    resolution=args.resolution,
+                                                    workers=args.num_workers)
 
         self.optimizer = optim.Adam(self.model.parameters(),
                                args.learning_rate)

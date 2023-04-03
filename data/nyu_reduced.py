@@ -44,46 +44,46 @@ class depthDatasetMemory(Dataset):
     def __len__(self):
         return len(self.nyu_dataset)
 
-class NYU_Testset_Extracted(Dataset):
-    def __init__(self, root, resolution='full'):
-        self.root = root
-        self.resolution = resolution_dict[resolution]
+# class NYU_Testset_Extracted(Dataset):
+#     def __init__(self, root, resolution='full'):
+#         self.root = root
+#         self.resolution = resolution_dict[resolution]
 
-        self.files = os.listdir(self.root)
-
-
-    def __getitem__(self, index):
-        image_path = os.path.join(self.root, self.files[index])
-
-        data = np.load(image_path)
-        depth, image = data['depth'], data['image']
-        depth = np.expand_dims(depth, axis=2)
-
-        image, depth = data['image'], data['depth']
-        image = np.array(image)
-        depth = np.array(depth)
-        return image, depth
-
-    def __len__(self):
-        return len(self.files)
+#         self.files = os.listdir(self.root)
 
 
+#     def __getitem__(self, index):
+#         image_path = os.path.join(self.root, self.files[index])
 
-class NYU_Testset(Dataset):
-    def __init__(self, zip_path):
-        input_zip=ZipFile(zip_path)
-        data = {name: input_zip.read(name) for name in input_zip.namelist()}
+#         data = np.load(image_path)
+#         depth, image = data['depth'], data['image']
+#         depth = np.expand_dims(depth, axis=2)
+
+#         image, depth = data['image'], data['depth']
+#         image = np.array(image)
+#         depth = np.array(depth)
+#         return image, depth
+
+#     def __len__(self):
+#         return len(self.files)
+
+
+
+# class NYU_Testset(Dataset):
+#     def __init__(self, zip_path):
+#         input_zip=ZipFile(zip_path)
+#         data = {name: input_zip.read(name) for name in input_zip.namelist()}
         
-        self.rgb = torch.from_numpy(np.load(BytesIO(data['eigen_test_rgb.npy']))).type(torch.float32) #Range [0,1]
-        self.depth = torch.from_numpy(np.load(BytesIO(data['eigen_test_depth.npy']))).type(torch.float32) #Range[0, 10]
+#         self.rgb = torch.from_numpy(np.load(BytesIO(data['eigen_test_rgb.npy']))).type(torch.float32) #Range [0,1]
+#         self.depth = torch.from_numpy(np.load(BytesIO(data['eigen_test_depth.npy']))).type(torch.float32) #Range[0, 10]
 
-    def __getitem__(self, idx):
-        image = self.rgb[idx]
-        depth = self.depth[idx]
-        return image, depth
+#     def __getitem__(self, idx):
+#         image = self.rgb[idx]
+#         depth = self.depth[idx]
+#         return image, depth
 
-    def __len__(self):
-        return len(self.rgb)
+#     def __len__(self):
+#         return len(self.rgb)
 
 
 
@@ -98,6 +98,10 @@ def loadZipToMem(zip_file):
     # # Debugging
     # if True: nyu2_train = nyu2_train[:100]
     # if True: nyu2_test = nyu2_test[:100]
+
+    # data carrega um dicionario com ["caminho do arquivo" : "arquivo carregado"]
+    # nyu2_train e teste carrega uma lista que possui em seu valor outra lista sendo 
+    # ["caminho do arquivo RGB","caminho do arquivo GT"], oque linka o RGB com GT
 
     print('Loaded (Train Images: {0}, Test Images: {1}).'.format(len(nyu2_train), len(nyu2_test)))
     return data, nyu2_train, nyu2_test

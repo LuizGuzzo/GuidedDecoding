@@ -16,7 +16,12 @@ max_depths = {
     'kitti': 80.0,
     'nyu' : 10.0,
     'nyu_reduced' : 10.0,
+    'diode' : 300.0
 }
+diode_res = { # alterar
+    'full' : (480, 640),
+    'half' : (240, 320),
+    'mini' : (224, 224)}
 nyu_res = {
     'full' : (480, 640),
     'half' : (240, 320),
@@ -27,13 +32,15 @@ kitti_res = {
     'tu_big' : (228, 912),
     'half' : (192, 640)}
 resolutions = {
+    'diode': diode_res,
     'nyu' : nyu_res,
     'nyu_reduced' : nyu_res,
     'kitti' : kitti_res}
 crops = {
     'kitti' : [128, 381, 45, 1196],
     'nyu' : [20, 460, 24, 616],
-    'nyu_reduced' : [20, 460, 24, 616]}
+    'nyu_reduced' : [20, 460, 24, 616],
+    'diode' : [20, 460, 24, 616]}
 
 class Evaluater():
     def __init__(self, args):
@@ -133,14 +140,13 @@ class Evaluater():
                     self.crop = np.array([0.3324324 * gt_height,  0.91351351 * gt_height,
                                           0.0359477 * gt_width,   0.96405229 * gt_width]).astype(np.int32)
 
-                if i in self.visualize_images:
-                    self.save_image_results(image, gt, prediction, i)
-
                 gt = gt[:,:, self.crop[0]:self.crop[1], self.crop[2]:self.crop[3]]
                 gt_flip = gt_flip[:,:, self.crop[0]:self.crop[1], self.crop[2]:self.crop[3]]
                 prediction = prediction[:,:, self.crop[0]:self.crop[1], self.crop[2]:self.crop[3]]
                 prediction_flip = prediction_flip[:,:, self.crop[0]:self.crop[1], self.crop[2]:self.crop[3]]
 
+            if i in self.visualize_images:
+                    self.save_image_results(image, gt, prediction, i)
 
 
             result = Result()
@@ -223,20 +229,22 @@ class Evaluater():
         error_map = gt - prediction
         vmax_error = self.maxDepth / 10.0
         vmin_error = 0.0
-        cmap = 'viridis'
+        cmap = 'plasma'
 
         vmax = torch.max(gt[gt != 0.0])
         vmin = torch.min(gt[gt != 0.0])
 
+        #RGB
         save_to_dir = os.path.join(self.result_dir, 'image_{}.png'.format(image_id))
         fig = plt.figure(frameon=False)
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        # ax.imshow(img)
+        ax.imshow(img)
         fig.savefig(save_to_dir)
         plt.clf()
 
+        #Errors
         save_to_dir = os.path.join(self.result_dir, 'errors_{}.png'.format(image_id))
         fig = plt.figure(frameon=False)
         ax = plt.Axes(fig, [0., 0., 1., 1.])
@@ -247,20 +255,22 @@ class Evaluater():
         fig.savefig(save_to_dir)
         plt.clf()
 
+        #GT
         save_to_dir = os.path.join(self.result_dir, 'gt_{}.png'.format(image_id))
         fig = plt.figure(frameon=False)
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        # ax.imshow(gt, vmin=vmin, vmax=vmax, cmap=cmap)
+        ax.imshow(gt, vmin=vmin, vmax=vmax, cmap=cmap)
         fig.savefig(save_to_dir)
         plt.clf()
 
+        #Prediction
         save_to_dir = os.path.join(self.result_dir, 'depth_{}.png'.format(image_id))
         fig = plt.figure(frameon=False)
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        # ax.imshow(prediction, vmin=vmin, vmax=vmax, cmap=cmap)
+        ax.imshow(prediction, vmin=vmin, vmax=vmax, cmap=cmap)
         fig.savefig(save_to_dir)
         plt.clf()

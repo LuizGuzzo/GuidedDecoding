@@ -59,7 +59,7 @@ def get_args():
     parser.add_argument('--weights_path',
                         type=str,
                         help='path to model weights'
-                        ,default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
+                        # ,default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
                         )
 
     #Checkpoint
@@ -81,7 +81,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=1)
+                        default=16)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

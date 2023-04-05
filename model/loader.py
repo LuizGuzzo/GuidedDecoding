@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 
 # from model.Unet3plus import UNet3plus
-from model.NestedUnet_mobileV2 import NestedUNet
+from model.NestedUnet import NestedUNet
 
 def load_model(model_name, weights_pth,deep_supervision=False):
     model = model_builder(model_name,deep_supervision)
@@ -15,7 +15,8 @@ def load_model(model_name, weights_pth,deep_supervision=False):
     return model
 
 def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)/1000000
+    count = sum(p.numel() for p in model.parameters() if p.requires_grad)/1000000
+    print("Parametros da rede: %.2f M" % count)
 
 def model_builder(model_name,deep_supervision):
     # if model_name == 'GuideDepth':
@@ -24,7 +25,7 @@ def model_builder(model_name,deep_supervision):
     #     return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
     if model_name == "teste":
         modelo = NestedUNet(deep_supervision = deep_supervision).cuda()#.cpu()
-        print("Parametros da rede: %.2f M" % count_parameters(modelo))
+        count_parameters(modelo)
         return modelo
     # if model_name == 'pixelformer':
     #     return PixelFormer(version="base07", inv_depth=True, max_depth=10, 

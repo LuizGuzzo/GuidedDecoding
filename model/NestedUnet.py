@@ -9,27 +9,25 @@ from .teste import *
 
 
 #                        bz, ch, he, wi
-# feature[0]: torch.Size([16, 3, 240, 320])
-# feature[1]: torch.Size([16, 32, 120, 160])
-# feature[2]: torch.Size([16, 16, 120, 160])-
-# feature[3]: torch.Size([16, 24, 60, 80])  
-# feature[4]: torch.Size([16, 24, 60, 80])  -
-# feature[5]: torch.Size([16, 32, 30, 40])  
-# feature[6]: torch.Size([16, 32, 30, 40])  
-# feature[7]: torch.Size([16, 32, 30, 40])  -
-# feature[8]: torch.Size([16, 64, 15, 20])  
-# feature[9]: torch.Size([16, 64, 15, 20])  
-# feature[10]: torch.Size([16, 64, 15, 20]) 
-# feature[11]: torch.Size([16, 64, 15, 20]) 
-# feature[12]: torch.Size([16, 96, 15, 20]) 
-# feature[13]: torch.Size([16, 96, 15, 20]) 
-# feature[14]: torch.Size([16, 96, 15, 20]) -
-# feature[15]: torch.Size([16, 160, 8, 10]) 
-# feature[16]: torch.Size([16, 160, 8, 10])
-# feature[17]: torch.Size([16, 160, 8, 10])
-# feature[18]: torch.Size([16, 320, 8, 10])
-# feature[19]: torch.Size([16, 1280, 8, 10])-
-
+# feature[0]: torch.Size([1, 3, 240, 320])-
+# feature[1]: torch.Size([1, 24, 60, 80])-
+# feature[2]: torch.Size([1, 48, 30, 40])
+# feature[3]: torch.Size([1, 48, 30, 40])
+# feature[4]: torch.Size([1, 48, 30, 40])
+# feature[5]: torch.Size([1, 48, 30, 40])-
+# feature[6]: torch.Size([1, 96, 15, 20])
+# feature[7]: torch.Size([1, 96, 15, 20])
+# feature[8]: torch.Size([1, 96, 15, 20])
+# feature[9]: torch.Size([1, 96, 15, 20])-
+# feature[10]: torch.Size([1, 96, 15, 20])
+# feature[11]: torch.Size([1, 96, 15, 20])
+# feature[12]: torch.Size([1, 96, 15, 20])
+# feature[13]: torch.Size([1, 96, 15, 20])-
+# feature[14]: torch.Size([1, 192, 8, 10])
+# feature[15]: torch.Size([1, 192, 8, 10])
+# feature[16]: torch.Size([1, 192, 8, 10])
+# feature[17]: torch.Size([1, 192, 8, 10])
+# feature[18]: torch.Size([1, 1024, 8, 10])-
 
 
 
@@ -45,7 +43,8 @@ class NestedUNet(nn.Module):
 
         self.deep_supervision = deep_supervision
         
-        nb_filter = [3,16,24,32,96,1280]
+        nb_filter = [3,24,48,96,96,1024]
+
        
         # self.upConcat = Up_concat()
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
@@ -99,7 +98,7 @@ class NestedUNet(nn.Module):
 
         features = self.encoder(input)
         
-        feats = [features[0],features[2],features[4],features[7],features[14],features[19]]
+        feats = [features[0],features[1],features[5],features[9],features[13],features[18]]
 
         #U-net normal
         # x = self.conv5(self.upConcat(feats[5],[feats[4]]))

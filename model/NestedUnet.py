@@ -11,14 +11,14 @@ from .teste import *
 #                        bz, ch, he, wi
 # feature[0]: torch.Size([1, 3, 240, 320])-
 # feature[1]: torch.Size([1, 24, 60, 80])-
-# feature[2]: torch.Size([1, 48, 30, 40])
-# feature[3]: torch.Size([1, 48, 30, 40])
+# feature[2]: torch.Size([1, 48, 30, 40])-
+# feature[3]: torch.Size([1, 48, 30, 40])-
 # feature[4]: torch.Size([1, 48, 30, 40])
-# feature[5]: torch.Size([1, 48, 30, 40])-
-# feature[6]: torch.Size([1, 96, 15, 20])
+# feature[5]: torch.Size([1, 48, 30, 40])
+# feature[6]: torch.Size([1, 96, 15, 20])-
 # feature[7]: torch.Size([1, 96, 15, 20])
 # feature[8]: torch.Size([1, 96, 15, 20])
-# feature[9]: torch.Size([1, 96, 15, 20])-
+# feature[9]: torch.Size([1, 96, 15, 20])
 # feature[10]: torch.Size([1, 96, 15, 20])
 # feature[11]: torch.Size([1, 96, 15, 20])
 # feature[12]: torch.Size([1, 96, 15, 20])
@@ -27,7 +27,8 @@ from .teste import *
 # feature[15]: torch.Size([1, 192, 8, 10])
 # feature[16]: torch.Size([1, 192, 8, 10])
 # feature[17]: torch.Size([1, 192, 8, 10])
-# feature[18]: torch.Size([1, 1024, 8, 10])-
+# feature[18]: torch.Size([1, 1024, 8, 10])
+
 
 
 
@@ -43,8 +44,7 @@ class NestedUNet(nn.Module):
 
         self.deep_supervision = deep_supervision
         
-        nb_filter = [3,24,48,96,96,1024]
-
+        nb_filter = [3,24,48,48,96,96] 
        
         # self.upConcat = Up_concat()
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
@@ -97,8 +97,10 @@ class NestedUNet(nn.Module):
     def forward(self, input):
 
         features = self.encoder(input)
+
+        layers = [0,1,2,3,6,13]
         
-        feats = [features[0],features[1],features[5],features[9],features[13],features[18]]
+        feats = [features[layers[0]],features[layers[1]],features[layers[2]],features[layers[3]],features[layers[4]],features[layers[5]]]
 
         #U-net normal
         # x = self.conv5(self.upConcat(feats[5],[feats[4]]))

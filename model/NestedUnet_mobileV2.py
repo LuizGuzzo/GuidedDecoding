@@ -18,25 +18,6 @@ class ConvBlock(nn.Sequential):
     def forward(self, x):        
         return self.convblock(x)
 
-class VGGBlock(nn.Module):
-    def __init__(self, in_channels, middle_channels, out_channels):
-        super().__init__()
-        self.relu = nn.ReLU(inplace=True)
-        self.conv1 = nn.Conv2d(in_channels, middle_channels, 3, padding=1)
-        self.bn1 = nn.BatchNorm2d(middle_channels)
-        self.conv2 = nn.Conv2d(middle_channels, out_channels, 3, padding=1)
-        self.bn2 = nn.BatchNorm2d(out_channels)
-
-    def forward(self, x):
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
-
-        out = self.conv2(out)
-        out = self.bn2(out)
-        out = self.relu(out)
-
-        return out
 
 #                        bz, ch, hi, wi
 # feature[0]: torch.Size([32, 3, 240, 320]) - 
@@ -60,16 +41,20 @@ class VGGBlock(nn.Module):
 # feature[18]: torch.Size([32, 320, 8, 10])
 # feature[19]: torch.Size([32, 1280, 8, 10])- 
 
+def count_parameters(model):
+    count = sum(p.numel() for p in model.parameters() if p.requires_grad)/1000000
+    print("Parametros do Encoder: %.2f M" % count)
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
         import torchvision.models as models
-        backbone_nn = models.mobilenet_v2( pretrained=True ) 
+        backbone_nn = models.efficientnet_b0( pretrained=True ) 
         
         print("NOT freezing backbone layers - MobileNetV2")
         for param in backbone_nn.parameters():
             param.requires_grad = True
 
+        count_parameters(backbone_nn)
         self.original_model = backbone_nn
 
     def forward(self, x):
@@ -100,7 +85,7 @@ class NestedUNet(nn.Module):
 
         # in_channels = [1280,96,32,24,16]
         # nb_filter = [32, 64, 128, 256, 512]
-        nb_filter = [3,16,24,32,96,1280] # troca para ser 320 em vez de 1280
+        nb_filter = [3,16,24,40,112,1280] # troca para ser 320 em vez de 1280
 
         self.deep_supervision = deep_supervision
 
@@ -138,7 +123,7 @@ class NestedUNet(nn.Module):
 
         features = self.encoder(input)
 
-        feats = [features[0],features[2],features[4],features[7],features[14],features[19]]
+        feats = [features[0],features[2],features[3],features[4],features[6],features[9]]
 
         x0_0 = feats[0]
 

@@ -39,7 +39,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Nano Inference for Monocular Depth Estimation')
 
     #Mode
-    parser.set_defaults(evaluate=False)
+    parser.set_defaults(evaluate=True)
     parser.add_argument('--eval',
                         dest='evaluate',
                         action='store_true')
@@ -47,12 +47,14 @@ def get_args():
     #Data
     parser.add_argument('--test_path',
                         type=str,
-                        help='path to test data')
+                        help='path to test data',
+                        default="./nyudata/CSVdata.zip")
+    
     parser.add_argument('--dataset',
                         type=str,
                         help='dataset for training',
                         choices=['kitti', 'nyu', 'nyu_reduced'],
-                        default='kitti')
+                        default='nyu_reduced')
     parser.add_argument('--resolution',
                         type=str,
                         help='Resolution of the images for training',
@@ -64,10 +66,12 @@ def get_args():
     parser.add_argument('--model',
                         type=str,
                         help='name of the model to be trained',
-                        default='UpDepth')
+                        default='teste')
     parser.add_argument('--weights_path',
                         type=str,
-                        help='path to model weights')
+                        help='path to model weights'
+                        ,default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
+                        )
     parser.add_argument('--save_results',
                         type=str,
                         help='path to save results to',
@@ -77,7 +81,7 @@ def get_args():
     parser.add_argument('--num_workers',
                         type=int,
                         help='number of dataloader workers',
-                        default=1)
+                        default=0)
 
 
     return parser.parse_args()

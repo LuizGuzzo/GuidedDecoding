@@ -2,7 +2,7 @@ import os
 import shutil
 
 # Altere isso para o caminho onde estão suas 28 pastas principais
-diretorio_base = 'D:/luizg/Documents/dataSets/pasta KITTI/KITTI/data_raw/city'
+diretorio_base = 'D:\luizg\Documents\dataSets\pasta_KITTI\KITTI\data_depth_annotated'
 
 # Lista de pastas para remover
 pastas_para_remover = ['image_00', 'image_01', 'image_03', 'velodyne_points', 'oxts']

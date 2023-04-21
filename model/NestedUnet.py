@@ -87,10 +87,12 @@ class NestedUNet(nn.Module):
 
     def forward(self, input):
 
+        
+        sobel = 
+
         features = self.encoder(input)
 
         layers = [0,2,3,4,6,9]
-        
         feats = [features[layers[0]],features[layers[1]],features[layers[2]],features[layers[3]],features[layers[4]],features[layers[5]]]
 
         #U-net normal
@@ -100,7 +102,6 @@ class NestedUNet(nn.Module):
         # x = self.conv2(self.upConcat(x,[feats[1]]))
         # x = self.conv1(self.upConcat(x,[feats[0]]))
         # output = self.final(x)
-
 
         x0_0 = feats[0]
 

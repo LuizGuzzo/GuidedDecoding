@@ -10,38 +10,32 @@ from tqdm import tqdm
 import concurrent.futures
 import re
 
-
 from fill_depth_colorization import fill_depth_colorization
 
-def process_image(input_rgb_path, input_depth_path, output_depth_path):
-    imgRgb = np.array(Image.open(input_rgb_path)) / 255.0
-    imgDepthInput = np.array(Image.open(input_depth_path))
+def process_image(input_rgb_path, input_depth_path, output_depth_path, error_log=None):
+    try:
+        imgRgb = np.array(Image.open(input_rgb_path)) / 255.0
+        imgDepthInput = np.array(Image.open(input_depth_path))
 
-    output = fill_depth_colorization(imgRgb, imgDepthInput, alpha=1)
+        output = fill_depth_colorization(imgRgb, imgDepthInput, alpha=1)
 
-    denseDepth = np.interp(output, (output.min(), output.max()), (0, 255))
-    denseDepth = Image.fromarray(np.uint8(denseDepth))
-    denseDepth.save(output_depth_path)
+        denseDepth = np.interp(output, (output.min(), output.max()), (0, 255))
+        denseDepth = Image.fromarray(np.uint8(denseDepth))
+        denseDepth.save(output_depth_path)
+    except Exception as e:
+        if error_log is not None:
+            with open(error_log, 'a') as log_file:
+                log_file.write(f"Error processing {input_depth_path}: {e}\n")
 
 
-
-
-def find_matching_rgb_image(depth_path, input_rgb_folder):
-    # Extract the common part of the path, e.g., "2011_09_26_drive_0001_sync"
-    match = re.search(r'(\d{4}_\d{2}_\d{2}_drive_\d{4}_sync)', depth_path)
-    if not match:
-        raise ValueError(f"Could not find a matching pattern in the depth path: {depth_path}")
-
-    common_part = match.group(1)
-    image_number = os.path.basename(depth_path)
-
-    # Construct the path to the corresponding RGB image
-    rgb_path = os.path.join(input_rgb_folder, common_part, f"{common_part[:10]}", common_part, "image_02", "data", image_number)
-    if not os.path.exists(rgb_path):
-        raise FileNotFoundError(f"Could not find the corresponding RGB image for the depth path: {depth_path}")
-
-    return rgb_path
-
+def find_matching_rgb_image(input_depth_path, rgb_folder):
+    depth_file_name = os.path.basename(input_depth_path)
+    potential_folders = glob.glob(os.path.join(rgb_folder, "**", "image_02", "data"), recursive=True)
+    for folder in potential_folders:
+        potential_file_path = os.path.join(folder, depth_file_name)
+        if os.path.exists(potential_file_path):
+            return potential_file_path
+    return None
 
 
 def process_images_in_parallel(input_rgb_folder, input_depth_folder, output_folder, num_workers=None):
@@ -49,7 +43,7 @@ def process_images_in_parallel(input_rgb_folder, input_depth_folder, output_fold
 
     input_depth_files = sorted(glob.glob(os.path.join(input_depth_folder, "**", "*.png"), recursive=True))
 
-    total_images = len(input_depth_files)
+    processed_images = 0
 
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         futures = []
@@ -62,10 +56,16 @@ def process_images_in_parallel(input_rgb_folder, input_depth_folder, output_fold
             output_depth_path = os.path.join(output_folder, relative_depth_path)
             os.makedirs(os.path.dirname(output_depth_path), exist_ok=True)
 
-            futures.append(executor.submit(process_image, input_rgb_path, input_depth_path, output_depth_path))
+            # Skip the image if it has already been processed.
+            if os.path.exists(output_depth_path):
+                continue
 
-        for future in tqdm(concurrent.futures.as_completed(futures), total=total_images, unit="image"):
+            futures.append(executor.submit(process_image, input_rgb_path, input_depth_path, output_depth_path, error_log))
+            processed_images += 1
+
+        for future in tqdm(concurrent.futures.as_completed(futures), total=processed_images, unit="image"):
             future.result()
+
 
 
 if __name__ == "__main__":
@@ -73,5 +73,8 @@ if __name__ == "__main__":
     input_rgb_folder = main_path+"/data_raw"
     input_depth_folder = main_path+"/data_depth_annotated"
     output_folder = main_path+"/denseDepth"
+    error_log = main_path + "/error_log.txt"
+    num_workers = None
 
-    process_images_in_parallel(input_rgb_folder, input_depth_folder, output_folder)
+    process_images_in_parallel(input_rgb_folder, input_depth_folder, output_folder, num_workers)
+

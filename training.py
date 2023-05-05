@@ -100,6 +100,7 @@ class Trainer():
         accumulated_loss = 0.0
 
         for i, data in enumerate(tqdm(self.train_loader)):
+            torch.autograd.set_detect_anomaly(True)
             image, gt = self.unpack_and_move(data)
             self.optimizer.zero_grad()
 

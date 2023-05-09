@@ -2,7 +2,8 @@ import torch.nn as nn
 import torch
 
 # from model.Unet3plus import UNet3plus
-from model.GAUnet.customUnet import GAUNet
+# from model.GAUnet.customUnet import GAUNet
+from model.Unets.NestedUnet import NestedUNet
 
 def load_model(model_name, weights_pth,deep_supervision=False):
     model = model_builder(model_name,deep_supervision)
@@ -23,9 +24,13 @@ def model_builder(model_name,deep_supervision):
     #     return GuideDepth(True)
     # if model_name == 'GuideDepth-S':
     #     return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
+    # if model_name == "teste":
+    #     bin_list = [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1]
+    #     modelo = GAUNet(num_classes=1,input_channels=3,mid_channels=246,bin_genotype=bin_list).cuda()#.cpu()
+    #     count_parameters(modelo)
+    #     return modelo
     if model_name == "teste":
-        bin_list = [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1]
-        modelo = GAUNet(num_classes=1,input_channels=3,mid_channels=20,bin_genotype=bin_list).cuda()#.cpu()
+        modelo = NestedUNet(num_classes=1, input_channels=3, deep_supervision=False).cuda()#.cpu()
         count_parameters(modelo)
         return modelo
     # if model_name == 'pixelformer':

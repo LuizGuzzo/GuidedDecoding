@@ -1,9 +1,9 @@
 import torch.nn as nn
-from .Encoder import Encoder
+from model.Unets.Encoder import Encoder
 
-from .Blocks import *
+from model.Unets.Blocks import *
 
-from .teste import *
+from model.Unets.teste import *
 
 #codigo base: https://github.com/4uiiurz1/pytorch-nested-unet/blob/557ea02f0b5d45ec171aae2282d2cd21562a633e/archs.py
 
@@ -88,7 +88,7 @@ class NestedUNet(nn.Module):
     def forward(self, input):
 
         
-        sobel = 
+        # sobel = 
 
         features = self.encoder(input)
 

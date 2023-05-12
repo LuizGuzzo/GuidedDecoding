@@ -47,11 +47,11 @@ class GAUNet(nn.Module):
 
         # rgb > convblock > maxpool > ... > maxpool > convblock > up > convblock > ... > up > pred
 
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
 
 
         
-    def forward(self, input): #WIP
+    def forward(self, input):
         
         x = self.init_conv(input)
         encode_outputs = [None for _ in range(len(self.genotype_sequence_encoder))]
@@ -69,7 +69,7 @@ class GAUNet(nn.Module):
                 out = convBlock(self.up_list[i](out) + encode_outputs[-(2 + i)])
             
         out = self.final_conv(out)
-        out = self.sigmoid(out)
+        # out = self.sigmoid(out)
         return out
 
 # # Exemplo de uso

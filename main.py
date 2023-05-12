@@ -29,18 +29,19 @@ def get_args():
     parser.add_argument('--data_path',
                         type=str,
                         help='path to train data',
-                        # default="./nyudata/CSVdata.zip")#os.path.join(file_dir, 'kitti_comb'))  
-                        default="D:\luizg\Documents\dataSets\pasta_KITTI\KITTI")
+                        default="./nyudata/CSVdata.zip")#os.path.join(file_dir, 'kitti_comb'))  
+                        # default="D:\luizg\Documents\dataSets\pasta_KITTI\KITTI")
     parser.add_argument('--test_path',
                         type=str,
                         help='path to test data',
-                        # default="./nyudata/CSVdata.zip") #os.path.join(file_dir, 'kitti_comb'))
-                        default="D:\luizg\Documents\dataSets\pasta_KITTI\KITTI")
+                        default="./nyudata/CSVdata.zip") #os.path.join(file_dir, 'kitti_comb'))
+                        # default="D:\luizg\Documents\dataSets\pasta_KITTI\KITTI")
     parser.add_argument('--dataset',
                         type=str,
                         help='dataset for training',
                         choices=['kitti', 'nyu', 'nyu_reduced',"diode"],
-                        default='kitti')
+                        default='nyu_reduced')
+                        # default='kitti')
     parser.add_argument('--resolution',
                         type=str,
                         help='Resolution of the images for training',
@@ -83,7 +84,7 @@ def get_args():
     parser.add_argument('--batch_size',
                         type=int,
                         help='batch size',
-                        default=6)
+                        default=4)
     parser.add_argument('--learning_rate',
                         type=float,
                         help='learning rate',

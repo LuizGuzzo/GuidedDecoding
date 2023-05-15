@@ -26,6 +26,8 @@ class GAUNet(nn.Module):
                 GraphConvBlock(graph=connections, operation_id=op_sequence, in_ch=mid_channels, md_ch=mid_channels, out_ch=mid_channels)
             )
 
+        self.genotype_sequence_encoder = nn.Sequential(*self.genotype_sequence_encoder)
+
         # decoder
         self.up_list = nn.ModuleList()
         
@@ -38,12 +40,11 @@ class GAUNet(nn.Module):
                 GraphConvBlock(graph=connections, operation_id=op_sequence, in_ch=mid_channels, md_ch=mid_channels, out_ch=mid_channels)
             )
             self.up_list.append(nn.ConvTranspose2d(in_channels=mid_channels, out_channels=mid_channels, kernel_size=2, stride=2))
-
         
-        self.final_conv = nn.Conv2d(in_channels=mid_channels, out_channels=num_classes, kernel_size=1, stride=1)
-
-        self.genotype_sequence_encoder = nn.Sequential(*self.genotype_sequence_encoder)
         self.genotype_sequence_decoder = nn.Sequential(*self.genotype_sequence_decoder)
+
+        self.final_conv = nn.Conv2d(in_channels=mid_channels, out_channels=num_classes, kernel_size=1, stride=1)
+        self.mish = nn.Mish()
 
         # rgb > convblock > maxpool > ... > maxpool > convblock > up > convblock > ... > up > pred
 
@@ -69,6 +70,7 @@ class GAUNet(nn.Module):
                 out = convBlock(self.up_list[i](out) + encode_outputs[-(2 + i)])
             
         out = self.final_conv(out)
+        out = self.mish(out)
         # out = self.sigmoid(out)
         return out
 

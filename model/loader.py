@@ -26,7 +26,7 @@ def model_builder(model_name,deep_supervision):
     #     return GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
     if model_name == "teste":
         bin_list = [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1]
-        modelo = GAUNet(num_classes=1,input_channels=3,mid_channels=20,bin_genotype=bin_list).cuda()#.cpu()
+        modelo = GAUNet(num_classes=1,input_channels=3,mid_channels=32,bin_genotype=bin_list).cuda()#.cpu()
         count_parameters(modelo)
         return modelo
     # if model_name == "teste":

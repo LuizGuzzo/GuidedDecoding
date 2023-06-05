@@ -35,7 +35,7 @@ class NestedUNet(nn.Module):
 
         self.deep_supervision = deep_supervision
         
-        nb_filter = [3,16,24,40,112,1280]
+        nb_filter = [3,24,48,96,96,1024]
        
         # self.upConcat = Up_concat()
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
@@ -87,12 +87,9 @@ class NestedUNet(nn.Module):
 
     def forward(self, input):
 
-        
-        # sobel = 
-
         features = self.encoder(input)
 
-        layers = [0,2,3,4,6,9]
+        layers = [0,1,5,9,13,18]
         feats = [features[layers[0]],features[layers[1]],features[layers[2]],features[layers[3]],features[layers[4]],features[layers[5]]]
 
         #U-net normal

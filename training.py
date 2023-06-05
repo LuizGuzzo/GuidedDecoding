@@ -35,6 +35,7 @@ class Trainer():
         self.val_losses = []
         self.max_epochs = args.num_epochs
         self.maxDepth = max_depths[args.dataset]
+        self.batch_size = args.batch_size
 
         self.deep_supervision = args.deep_supervision
         

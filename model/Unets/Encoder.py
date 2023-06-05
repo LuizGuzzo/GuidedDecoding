@@ -7,7 +7,7 @@ def count_parameters(model):
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        backbone_nn = models.shufflenet_v2_x0_5( pretrained=True ) 
+        backbone_nn = models.efficientnet_b0( pretrained=True ) 
 
         print("NOT freezing backbone layers - ",type(backbone_nn).__name__)
         for param in backbone_nn.parameters():
@@ -17,39 +17,39 @@ class Encoder(nn.Module):
         self.original_model = backbone_nn
 
 
-    def forward(self, x):
-        features = [x]
-        # Process the first convolutional layer and max pooling
-        x = self.original_model.conv1(x)
-        x = self.original_model.maxpool(x)
-        features.append(x)
-
-        # Process the stages (ShuffleNetV2 layers)
-        for stage in self.original_model.stage2, self.original_model.stage3, self.original_model.stage4:
-            for layer in stage:
-                x = layer(x)
-                features.append(x)
-
-        # Process the last convolutional layer
-        x = self.original_model.conv5(x)
-        features.append(x)
-
-        # if True: # leitura de tamanho das features
-        #     for block in range(len(features)):
-        #         print("feature[{}]: {}".format(block,features[block].size()))
-
-        return features
-
     # def forward(self, x):
     #     features = [x]
-    #     for _, v in self.original_model.features._modules.items():
-    #         features.append( v(features[-1]) )
+    #     # Process the first convolutional layer and max pooling
+    #     x = self.original_model.conv1(x)
+    #     x = self.original_model.maxpool(x)
+    #     features.append(x)
+
+    #     # Process the stages (ShuffleNetV2 layers)
+    #     for stage in self.original_model.stage2, self.original_model.stage3, self.original_model.stage4:
+    #         for layer in stage:
+    #             x = layer(x)
+    #             features.append(x)
+
+    #     # Process the last convolutional layer
+    #     x = self.original_model.conv5(x)
+    #     features.append(x)
 
     #     # if True: # leitura de tamanho das features
     #     #     for block in range(len(features)):
     #     #         print("feature[{}]: {}".format(block,features[block].size()))
 
     #     return features
+
+    def forward(self, x):
+        features = [x]
+        for _, v in self.original_model.features._modules.items():
+            features.append( v(features[-1]) )
+
+        # if True: # leitura de tamanho das features
+        #     for block in range(len(features)):
+        #         print("feature[{}]: {}".format(block,features[block].size()))
+
+        return features
     
 
 # shufflenet_v2_x1_0 - 2.28 M > 3.77 M

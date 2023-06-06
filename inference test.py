@@ -13,6 +13,8 @@ from model import loader
 from metrics import AverageMeter, Result
 from data import transforms
 
+from tqdm import tqdm
+
 max_depths = {
     'kitti': 80.0,
     'nyu' : 10.0,
@@ -116,7 +118,7 @@ class Inference_Engine():
                                                      path=args.test_path,
                                                      split='test',
                                                      batch_size=1,
-                                                     resolution=args.resolution,
+                                                     resolution="full",#args.resolution,
                                                      uncompressed=True,
                                                      workers=args.num_workers)
 
@@ -215,7 +217,7 @@ class Inference_Engine():
         average_meter = AverageMeter()
 
         dataset = self.test_loader#.dataset
-        for i, data in enumerate(dataset):
+        for i, data in enumerate(tqdm(dataset)):
             t0 = time.time()
             # image, gt = data
             # packed_data = {'image': image, 'depth':gt}
@@ -249,9 +251,11 @@ class Inference_Engine():
 
 
             # provavelmente aqui era para ter dobrado o GT ou ter pego o GT original de tamanho original
-            # if self.resolution_keyword == 'half':
-            #     prediction = self.upscale_depth(prediction)
-            #     prediction_flip = self.upscale_depth(prediction_flip)
+            if self.resolution_keyword == 'half':
+                prediction = self.upscale_depth(prediction)
+                prediction_flip = self.upscale_depth(prediction_flip)
+                # gt = self.upscale_depth(gt) #perdendo informação
+                # gt_flip = self.upscale_depth(gt_flip)
 
             if i in self.visualize_images:
                 self.save_image_results(image, gt, prediction, i)
@@ -275,14 +279,18 @@ class Inference_Engine():
         avg = average_meter.average()
         current_time = time.strftime('%H:%M', time.localtime())
         print('\n*\n'
+              'MSE={average.mse:.3f}\n'
               'RMSE={average.rmse:.3f}\n'
               'MAE={average.mae:.3f}\n'
+              'REL={average.absrel:.3f}\n' # é o absrel
+              'RMSE_log={average.rmse_log:.3f}\n'
+              'Lg10={average.lg10:.3f}\n'
+              'IRMSE={average.irmse:.3f}\n'
+              'IMAE={average.imae:.3f}\n'
               'Delta1={average.delta1:.3f}\n'
               'Delta2={average.delta2:.3f}\n'
               'Delta3={average.delta3:.3f}\n'
-              'REL={average.absrel:.3f}\n'
-              'Lg10={average.lg10:.3f}\n'
-              't_GPU={time:.3f}\n'.format(
+              't_GPU={average.gpu_time:.3f}\n'.format(
               average=avg, time=avg.gpu_time))
         return avg
 

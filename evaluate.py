@@ -46,6 +46,7 @@ class Evaluater():
     def __init__(self, args):
         self.debug = True
         self.dataset = args.dataset
+        args.batch_size = 1 # fix for the evaluation
 
         self.maxDepth = max_depths[args.dataset]
         self.res_dict = resolutions[args.dataset]
@@ -72,10 +73,12 @@ class Evaluater():
                                                  split='test',
                                                  batch_size= args.batch_size,
                                                  augmentation=args.eval_mode,
-                                                 resolution=args.resolution,
+                                                 resolution="full",#args.resolution,
                                                  workers=args.num_workers)
 
-        self.downscale_image = torchvision.transforms.Resize(self.resolution) #To Model resolution
+        if self.eval_mode == 'alhashim':
+            self.upscale_depth = torchvision.transforms.Resize(self.res_dict['full']) #To Full res
+            self.downscale_image = torchvision.transforms.Resize(self.resolution) #To Half res
 
         # self.to_tensor = transforms.ToTensor(test=True, maxDepth=self.maxDepth)
 
@@ -127,10 +130,10 @@ class Evaluater():
             gpu_time = time.time() - t0
 
             if self.eval_mode == 'alhashim':
-                upscale_depth = torchvision.transforms.Resize(gt.shape[-2:]) #To GT res
 
-                prediction = upscale_depth(prediction)
-                prediction_flip = upscale_depth(prediction_flip)
+                # for correct resolution evaluation
+                prediction = self.upscale_depth(prediction)
+                prediction_flip = self.upscale_depth(prediction_flip)
 
                 if self.dataset == 'kitti':
 

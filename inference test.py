@@ -254,8 +254,6 @@ class Inference_Engine():
             if self.resolution_keyword == 'half':
                 prediction = self.upscale_depth(prediction)
                 prediction_flip = self.upscale_depth(prediction_flip)
-                # gt = self.upscale_depth(gt) #perdendo informação
-                # gt_flip = self.upscale_depth(gt_flip)
 
             if i in self.visualize_images:
                 self.save_image_results(image, gt, prediction, i)

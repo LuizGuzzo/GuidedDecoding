@@ -1,6 +1,18 @@
 import torch
 import torch.nn as nn
 
+#https://discuss.pytorch.org/t/how-to-modify-a-conv2d-to-depthwise-separable-convolution/15843/7
+class depthwise_separable_conv(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, stride, padding):
+        super(depthwise_separable_conv, self).__init__()
+        self.depthwise = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size, stride=stride, padding=padding, groups=in_channels)
+        self.pointwise = nn.Conv2d(in_channels, out_channels, kernel_size=1)
+
+    def forward(self, x):
+        out = self.depthwise(x)
+        out = self.pointwise(out)
+        return out
+
 class Mish_func(torch.autograd.Function):
     @staticmethod
     def forward(ctx, i):
@@ -53,26 +65,26 @@ class ConvBlock(nn.Module):
             if not self.mish and not self.ins:
                 # conv2d -> ReLU
                 self.conv = nn.Sequential(
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
                     nn.ReLU(self.inplace)
                 )
             elif self.mish and not self.ins:
                 # conv2d -> Mish
                 self.conv = nn.Sequential(
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
                     Mish()
                 )
             elif not self.mish and self.ins:
                 # conv2d -> IN -> ReLU
                 self.conv = nn.Sequential(
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
                     nn.InstanceNorm2d(self.out_ch),
                     nn.ReLU(self.inplace)
                 )
             elif self.mish and self.ins:
                 # conv2d -> IN -> Mish
                 self.conv = nn.Sequential(
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
                     nn.InstanceNorm2d(self.out_ch),
                     Mish()
                 )
@@ -81,27 +93,27 @@ class ConvBlock(nn.Module):
                 # ReLU -> conv2d
                 self.conv = nn.Sequential(
                     nn.ReLU(self.inplace),
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
                 )
             elif self.mish and not self.ins:
                 # Mish -> conv2d
                 self.conv = nn.Sequential(
                     Mish(),
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
                 )
             elif not self.mish and self.ins:
                 # IN -> ReLU -> conv2d
                 self.conv = nn.Sequential(
                     nn.InstanceNorm2d(self.in_ch),
                     nn.ReLU(self.inplace),
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
                 )
             elif self.mish and self.ins:
                 # IN -> Mish -> conv2d
                 self.conv = nn.Sequential(
                     nn.InstanceNorm2d(self.in_ch),
                     Mish(),
-                    nn.Conv2d(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
+                    depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
                 )
 
     def forward(self, x):

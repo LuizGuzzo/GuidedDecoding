@@ -29,34 +29,33 @@ class GraphConvBlock(nn.Module):
     def __init__(self, graph, operation_id, in_ch, md_ch, out_ch):
         super(GraphConvBlock, self).__init__()
         self.graph = graph
-        self.layers = nn.ModuleDict()
-
-        self.layers["0"] = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
+        # self.layers = nn.ModuleDict()
+        self.operation = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
 
         # TODO: alterar o DFS
         self.order = list(reversed(topological_sort(graph)))
 
-        # criando os nós com os blocos convolucionais
-        for node in graph.keys():
-            self.layers[str(node)] = deepcopy(get_func(operation_id, in_channel=md_ch, out_channel=out_ch))
+        pass
     
     def forward(self, x):
         activations = {}
 
         # o nó inicial passa pela convolução
-        activations[0] = self.layers["0"](x)
+        activations[0] = self.operation(x)
 
         # Ordem dos nós. Isso deve ser alterado para uma função que calcula a ordenação topológica
-        # No seu caso, você já sabe qual é a ordem correta, então pode simplesmente escrevê-la
+        # No caso, já sei qual é a ordem correta, então posso simplesmente escrevê-la
 
+        #return activations[0] #teste, a execução foi pra 622FPS..
+        
         # Calcule as ativações dos nós em ordem
-        for node in self.order[1:]:  # Comece do segundo nó, pois já calculamos a ativação do nó 0
-            # Inicialize a ativação do nó com zeros
-            activations[node] = torch.zeros_like(activations[0])
-            
+        for node in self.order[1:]:  # Comece do segundo nó, porque nó 0 nao existe no grafo
             # Calcule a ativação do nó somando as ativações dos nós filhos
-            for child in self.graph[node]:
-                activations[node] = activations[node] + self.layers[str(node)](activations[child])
+            for i,child in enumerate(self.graph[node]):
+                if i == 0:
+                    activations[node] = self.operation(activations[child])
+                else:
+                    activations[node] += self.operation(activations[child])          
 
         # A saída é a ativação do último nó
         output = activations[self.order[-1]]

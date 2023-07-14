@@ -10,10 +10,8 @@ class GAUNet(nn.Module):
         # conversor de binario para o genotype transcrito
         genotype = binary_to_unet(bin_genotype)
         
-        # encoder
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        # conv2d do codigo original
         self.init_conv = nn.Conv2d(in_channels=input_channels, out_channels=mid_channels, kernel_size=3, stride=1, padding=1)
 
         encoder_size = 4

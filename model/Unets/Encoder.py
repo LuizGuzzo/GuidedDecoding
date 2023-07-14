@@ -7,7 +7,7 @@ def count_parameters(model):
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        backbone_nn = models.efficientnet_b0( pretrained=True ) 
+        backbone_nn = models.mobilenet_v2(pretrained=True) 
 
         print("NOT freezing backbone layers - ",type(backbone_nn).__name__)
         for param in backbone_nn.parameters():

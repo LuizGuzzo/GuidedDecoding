@@ -13,41 +13,41 @@ class depthwise_separable_conv(nn.Module):
         out = self.pointwise(out)
         return out
 
-class Mish_func(torch.autograd.Function):
-    @staticmethod
-    def forward(ctx, i):
-        result = i * torch.tanh(nn.functional.softplus(i))
-        ctx.save_for_backward(i)
-        return result
+# class Mish_func(torch.autograd.Function):
+#     @staticmethod
+#     def forward(ctx, i):
+#         result = i * torch.tanh(nn.functional.softplus(i))
+#         ctx.save_for_backward(i)
+#         return result
 
-    @staticmethod
-    def backward(ctx, grad_output):
-        i = ctx.saved_variables[0]
+#     @staticmethod
+#     def backward(ctx, grad_output):
+#         i = ctx.saved_variables[0]
 
-        v = 1. + i.exp()
-        h = v.log()
-        grad_gh = 1. / h.cosh().pow_(2)
+#         v = 1. + i.exp()
+#         h = v.log()
+#         grad_gh = 1. / h.cosh().pow_(2)
 
-        # Note that grad_hv * grad_vx = sigmoid(x)
-        # grad_hv = 1./v
-        # grad_vx = i.exp()
+#         # Note that grad_hv * grad_vx = sigmoid(x)
+#         # grad_hv = 1./v
+#         # grad_vx = i.exp()
 
-        grad_hx = i.sigmoid()
+#         grad_hx = i.sigmoid()
 
-        grad_gx = grad_gh * grad_hx  # grad_hv * grad_vx
+#         grad_gx = grad_gh * grad_hx  # grad_hv * grad_vx
 
-        grad_f = torch.tanh(nn.functional.softplus(i)) + i * grad_gx
+#         grad_f = torch.tanh(nn.functional.softplus(i)) + i * grad_gx
 
-        return grad_output * grad_f
+#         return grad_output * grad_f
 
 
-class Mish(nn.Module):
-    def __init__(self, **kwargs):
-        super().__init__()
-        pass
+# class Mish(nn.Module):
+#     def __init__(self, **kwargs):
+#         super().__init__()
+#         pass
 
-    def forward(self, input_tensor):
-        return Mish_func.apply(input_tensor)
+#     def forward(self, input_tensor):
+#         return Mish_func.apply(input_tensor)
     
 class ConvBlock(nn.Module):
     def __init__(self, in_ch, out_ch, kernel=3, pre_act=False, mish=False, ins=False):
@@ -72,7 +72,7 @@ class ConvBlock(nn.Module):
                 # conv2d -> Mish
                 self.conv = nn.Sequential(
                     depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
-                    Mish()
+                    nn.Mish(),
                 )
             elif not self.mish and self.ins:
                 # conv2d -> IN -> ReLU
@@ -86,7 +86,7 @@ class ConvBlock(nn.Module):
                 self.conv = nn.Sequential(
                     depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding),
                     nn.InstanceNorm2d(self.out_ch),
-                    Mish()
+                    nn.Mish(),
                 )
         else:
             if not self.mish and not self.ins:
@@ -98,7 +98,7 @@ class ConvBlock(nn.Module):
             elif self.mish and not self.ins:
                 # Mish -> conv2d
                 self.conv = nn.Sequential(
-                    Mish(),
+                    nn.Mish(),
                     depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
                 )
             elif not self.mish and self.ins:
@@ -112,7 +112,7 @@ class ConvBlock(nn.Module):
                 # IN -> Mish -> conv2d
                 self.conv = nn.Sequential(
                     nn.InstanceNorm2d(self.in_ch),
-                    Mish(),
+                    nn.Mish(),
                     depthwise_separable_conv(in_channels=self.in_ch, out_channels=self.out_ch, kernel_size=self.kernel, stride=1, padding=self.padding)
                 )
 

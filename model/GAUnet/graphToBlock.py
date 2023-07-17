@@ -24,7 +24,30 @@ def topological_sort(graph):
 
     return order
 
+#Recursividade, sem armazenamento de tensores (acreditava ser mais leve)
+class GraphConvBlock(nn.Module):
+    def __init__(self, graph, operation_id, in_ch, md_ch, out_ch):
+        super(GraphConvBlock, self).__init__()
+        self.graph = graph
+        self.operation = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
 
+    def forward(self, x):
+        # Determinar o nó raiz
+        root = max(self.graph.keys())
+        return self.compute(root, x)
+        
+    
+    def compute(self,node, x):
+        if node not in self.graph:  # o nó não tem filhos
+            return self.operation(x)
+        
+        # Calcule a ativação somando as ativações dos nós filhos
+        activations = sum(self.compute(child, x) for child in self.graph[node])
+        return self.operation(activations)
+    
+
+# ordenação DFS com armazenamento de tensores
+"""
 class GraphConvBlock(nn.Module):
     def __init__(self, graph, operation_id, in_ch, md_ch, out_ch):
         super(GraphConvBlock, self).__init__()
@@ -33,7 +56,7 @@ class GraphConvBlock(nn.Module):
         self.operation = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
 
         # TODO: alterar o DFS
-        self.order = list(reversed(topological_sort(graph)))
+        # self.order = list(reversed(topological_sort(graph)))
 
         pass
     
@@ -60,7 +83,7 @@ class GraphConvBlock(nn.Module):
         # A saída é a ativação do último nó
         output = activations[self.order[-1]]
         return output
-
+"""
 
 # # Exemplo de uso
 # graph = {3: [2], 4: [1], 5: [1, 4], 1: [0], 2: [0], 6: [3, 5]}

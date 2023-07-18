@@ -4,14 +4,16 @@ import argparse
 
 import torch
 import torchvision
-import tensorrt as trt
-from torch2trt import torch2trt
+# import tensorrt as trt
+# from torch2trt import torch2trt
 import matplotlib.pyplot as plt
 
 from data import datasets
 from model import loader
 from metrics import AverageMeter, Result
 from data import transforms
+
+from tqdm import tqdm
 
 max_depths = {
     'kitti': 80.0,
@@ -116,7 +118,7 @@ class Inference_Engine():
                                                      path=args.test_path,
                                                      split='test',
                                                      batch_size=1,
-                                                     resolution=args.resolution,
+                                                     resolution="full",#args.resolution,
                                                      uncompressed=True,
                                                      workers=args.num_workers)
 
@@ -128,7 +130,7 @@ class Inference_Engine():
 
         self.visualize_images = []
 
-        self.trt_model, _ = self.convert_PyTorch_to_TensorRT()
+        # self.trt_model, _ = self.convert_PyTorch_to_TensorRT()
 
         self.run_evaluation()
 
@@ -136,7 +138,7 @@ class Inference_Engine():
 
     def run_evaluation(self):
         speed_pyTorch = self.pyTorch_speedtest()
-        speed_tensorRT = self.tensorRT_speedtest()
+        speed_tensorRT = 0 #self.tensorRT_speedtest()
         average = self.tensorRT_evaluate()
         self.save_results(average, speed_tensorRT, speed_pyTorch)
 
@@ -166,63 +168,65 @@ class Inference_Engine():
 
 
 
-    def tensorRT_speedtest(self, num_test_runs=200):
+    # def tensorRT_speedtest(self, num_test_runs=200):
+    #     torch.cuda.empty_cache()
+    #     times = 0.0
+    #     warm_up_runs = 10
+    #     for i in range(num_test_runs + warm_up_runs):
+    #         if i == warm_up_runs:
+    #             times = 0.0
+
+    #         x = torch.randn([1, 3, *self.resolution]).cuda()
+    #         torch.cuda.synchronize() #Synchronize transfer to cuda
+
+    #         t0 = time.time()
+    #         result = self.trt_model(x)
+    #         torch.cuda.synchronize()
+    #         times += time.time() - t0
+
+    #     times = times / num_test_runs
+    #     fps = 1 / times
+    #     print('[tensorRT] Runtime: {}s'.format(times))
+    #     print('[tensorRT] FPS: {}\n'.format(fps))
+    #     return times
+
+
+
+    # def convert_PyTorch_to_TensorRT(self):
+    #     x = torch.ones([1, 3, *self.resolution]).cuda()
+    #     print('[tensorRT] Starting TensorRT conversion')
+    #     model_trt = torch2trt(self.model, [x], fp16_mode=True)
+    #     print("[tensorRT] Model converted to TensorRT")
+
+    #     TRT_LOGGER = trt.Logger()
+    #     file_path = os.path.join(self.result_dir, '{}.engine'.format(self.results_filename))
+    #     with open(file_path, 'wb') as f:
+    #         f.write(model_trt.engine.serialize())
+
+    #     with open(file_path, 'rb') as f, trt.Runtime(TRT_LOGGER) as runtime:
+    #         engine = runtime.deserialize_cuda_engine(f.read())
+
+    #     print('[tensorRT] Engine serialized\n')
+    #     return model_trt, engine
+
+
+
+    def tensorRT_evaluate(self): # é de Pytorch
         torch.cuda.empty_cache()
-        times = 0.0
-        warm_up_runs = 10
-        for i in range(num_test_runs + warm_up_runs):
-            if i == warm_up_runs:
-                times = 0.0
-
-            x = torch.randn([1, 3, *self.resolution]).cuda()
-            torch.cuda.synchronize() #Synchronize transfer to cuda
-
-            t0 = time.time()
-            result = self.trt_model(x)
-            torch.cuda.synchronize()
-            times += time.time() - t0
-
-        times = times / num_test_runs
-        fps = 1 / times
-        print('[tensorRT] Runtime: {}s'.format(times))
-        print('[tensorRT] FPS: {}\n'.format(fps))
-        return times
-
-
-
-    def convert_PyTorch_to_TensorRT(self):
-        x = torch.ones([1, 3, *self.resolution]).cuda()
-        print('[tensorRT] Starting TensorRT conversion')
-        model_trt = torch2trt(self.model, [x], fp16_mode=True)
-        print("[tensorRT] Model converted to TensorRT")
-
-        TRT_LOGGER = trt.Logger()
-        file_path = os.path.join(self.result_dir, '{}.engine'.format(self.results_filename))
-        with open(file_path, 'wb') as f:
-            f.write(model_trt.engine.serialize())
-
-        with open(file_path, 'rb') as f, trt.Runtime(TRT_LOGGER) as runtime:
-            engine = runtime.deserialize_cuda_engine(f.read())
-
-        print('[tensorRT] Engine serialized\n')
-        return model_trt, engine
-
-
-
-    def tensorRT_evaluate(self):
-        torch.cuda.empty_cache()
-        self.model = None
+        # self.model = None
         average_meter = AverageMeter()
 
-        dataset = self.test_loader.dataset
-        for i, data in enumerate(dataset):
+        dataset = self.test_loader#.dataset
+        for i, data in enumerate(tqdm(dataset)):
             t0 = time.time()
-            image, gt = data
-            packed_data = {'image': image, 'depth':gt}
-            data = self.to_tensor(packed_data)
+            # image, gt = data
+            # packed_data = {'image': image, 'depth':gt}
+            # data = self.to_tensor(packed_data)
+            # image, gt = self.unpack_and_move(data)
+            # image = image.unsqueeze(0)
+            # gt = gt.unsqueeze(0)
+
             image, gt = self.unpack_and_move(data)
-            image = image.unsqueeze(0)
-            gt = gt.unsqueeze(0)
 
             image_flip = torch.flip(image, [3])
             gt_flip = torch.flip(gt, [3])
@@ -234,18 +238,19 @@ class Inference_Engine():
             data_time = time.time() - t0
 
             t0 = time.time()
-            inv_prediction = self.trt_model(image)
+            inv_prediction = self.model(image) # atualizado para pytorch #self.trt_model(image_flip) #self.trt_model(image)
             prediction = self.inverse_depth_norm(inv_prediction)
             torch.cuda.synchronize()
             gpu_time0 = time.time() - t0
 
             t1 = time.time()
-            inv_prediction_flip = self.trt_model(image_flip)
+            inv_prediction_flip = self.model(image_flip) # atualizado para pytorch #self.trt_model(image_flip)
             prediction_flip = self.inverse_depth_norm(inv_prediction_flip)
             torch.cuda.synchronize()
             gpu_time1 = time.time() - t1
 
 
+            # provavelmente aqui era para ter dobrado o GT ou ter pego o GT original de tamanho original
             if self.resolution_keyword == 'half':
                 prediction = self.upscale_depth(prediction)
                 prediction_flip = self.upscale_depth(prediction_flip)
@@ -272,14 +277,18 @@ class Inference_Engine():
         avg = average_meter.average()
         current_time = time.strftime('%H:%M', time.localtime())
         print('\n*\n'
+              'MSE={average.mse:.3f}\n'
               'RMSE={average.rmse:.3f}\n'
               'MAE={average.mae:.3f}\n'
+              'REL={average.absrel:.3f}\n' # é o absrel
+              'RMSE_log={average.rmse_log:.3f}\n'
+              'Lg10={average.lg10:.3f}\n'
+              'IRMSE={average.irmse:.3f}\n'
+              'IMAE={average.imae:.3f}\n'
               'Delta1={average.delta1:.3f}\n'
               'Delta2={average.delta2:.3f}\n'
               'Delta3={average.delta3:.3f}\n'
-              'REL={average.absrel:.3f}\n'
-              'Lg10={average.lg10:.3f}\n'
-              't_GPU={time:.3f}\n'.format(
+              't_GPU={average.gpu_time:.3f}\n'.format(
               average=avg, time=avg.gpu_time))
         return avg
 

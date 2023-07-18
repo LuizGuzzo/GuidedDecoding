@@ -5,13 +5,15 @@ import torch.nn as nn
 class depthwise_separable_conv(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride, padding):
         super(depthwise_separable_conv, self).__init__()
-        self.depthwise = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size, stride=stride, padding=padding, groups=in_channels)
-        self.pointwise = nn.Conv2d(in_channels, out_channels, kernel_size=1)
+        # self.depthwise = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size, stride=stride, padding=padding, groups=in_channels)
+        # self.pointwise = nn.Conv2d(in_channels, out_channels, kernel_size=1)
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
 
     def forward(self, x):
-        out = self.depthwise(x)
-        out = self.pointwise(out)
-        return out
+        # out = self.depthwise(x)
+        # out = self.pointwise(out)
+        # return out
+        return self.conv(x)
 
 # class Mish_func(torch.autograd.Function):
 #     @staticmethod

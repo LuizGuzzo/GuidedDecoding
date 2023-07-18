@@ -62,7 +62,7 @@ def get_args():
     parser.add_argument('--weights_path',
                         type=str,
                         help='path to model weights'
-                        ,#default="./results/unet++_sota/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
+                        ,default="./results/best_model.pth" # FICA ESPERTO PARA LIGAR DE VOLTA QND FOR TESTAR
                         )
 
     #Checkpoint

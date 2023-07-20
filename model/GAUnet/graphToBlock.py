@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from copy import deepcopy
 from model.GAUnet.operationSequences import get_func
 # from operationSequences import get_func
 
@@ -7,7 +8,12 @@ class GraphConvBlock(nn.Module):
     def __init__(self, graph, operation_id, in_ch, md_ch, out_ch):
         super(GraphConvBlock, self).__init__()
         self.graph = graph
-        self.operation = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
+
+        # self.operation = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
+        self.layers = nn.ModuleDict()
+        self.layers["0"] = get_func(operation_id, in_channel=in_ch, out_channel=md_ch)
+        for node in graph.keys():
+            self.layers[str(node)] = deepcopy(get_func(operation_id, in_channel=md_ch, out_channel=out_ch))
 
     def forward(self, x):
         # Determinar o nó raiz
@@ -17,11 +23,11 @@ class GraphConvBlock(nn.Module):
     
     def compute(self,node, x):
         if node not in self.graph:  # o nó não tem filhos
-            return self.operation(x)
+            return self.layers[str(node)](x)
         
         # Calcule a ativação somando as ativações dos nós filhos
         activations = sum(self.compute(child, x) for child in self.graph[node])
-        return self.operation(activations)
+        return self.layers[str(node)](activations)
     
 
 # # Exemplo de uso

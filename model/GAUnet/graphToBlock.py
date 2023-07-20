@@ -3,7 +3,6 @@ import torch.nn as nn
 from model.GAUnet.operationSequences import get_func
 # from operationSequences import get_func
 
-
 class GraphConvBlock(nn.Module):
     def __init__(self, graph, operation_id, in_ch, md_ch, out_ch):
         super(GraphConvBlock, self).__init__()
@@ -13,7 +12,8 @@ class GraphConvBlock(nn.Module):
     def forward(self, x):
         # Determinar o nó raiz
         root = max(self.graph.keys())
-        return self.compute(root, x) 
+        return self.compute(root, x)
+        
     
     def compute(self,node, x):
         if node not in self.graph:  # o nó não tem filhos
@@ -23,6 +23,7 @@ class GraphConvBlock(nn.Module):
         activations = sum(self.compute(child, x) for child in self.graph[node])
         return self.operation(activations)
     
+
 # # Exemplo de uso
 # graph = {3: [2], 4: [1], 5: [1, 4], 1: [0], 2: [0], 6: [3, 5]}
 # operation_id = 1

@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from model.DDRNet_23_slim import DualResNet_Backbone
-from model.modules import Guided_Upsampling_Block, SELayer
+from model.old_models.DDRNet_23_slim import DualResNet_Backbone
+from model.old_models.modules import Guided_Upsampling_Block, SELayer
 
 
 class GuideDepth(nn.Module):

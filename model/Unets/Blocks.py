@@ -42,6 +42,17 @@ class FSA(nn.Module): # Full Scale Aggregation
         return output_tensor
 
 
+class depthwise_separable_conv(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, stride, padding):
+        super(depthwise_separable_conv, self).__init__()
+        self.depthwise = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size, stride=stride, padding=padding, groups=in_channels)
+        self.pointwise = nn.Conv2d(in_channels, out_channels, kernel_size=1)
+
+    def forward(self, x):
+        out = self.depthwise(x)
+        out = self.pointwise(out)
+        return out
+
 class ConvBlock(nn.Sequential):
     def __init__(self, in_channels, out_channels):
         super(ConvBlock, self).__init__()
@@ -49,6 +60,19 @@ class ConvBlock(nn.Sequential):
             nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.2), # nn.Hardswish() é oque o mobile usa
             nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(0.2)
+        )
+        
+    def forward(self, x):        
+        return self.convblock(x)
+
+class ConvBlock_dwise(nn.Sequential):
+    def __init__(self, in_channels, out_channels):
+        super(ConvBlock_dwise, self).__init__()
+        self.convblock = nn.Sequential(
+            depthwise_separable_conv(in_channels, out_channels, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(0.2), # nn.Hardswish() é oque o mobile usa
+            depthwise_separable_conv(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.2)
         )
         

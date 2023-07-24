@@ -28,16 +28,16 @@ def model_builder(model_name,deep_supervision):
     #     modelo = GuideDepth(True, up_features=[32, 8, 4], inner_features=[32, 8, 4])
     #     count_parameters(modelo)
     #     return modelo
-    if model_name == "teste":
-        bin_list = [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1]
-        # print(len(bin_list))
-        modelo = GAUNet(num_classes=1,input_channels=3,mid_channels=20,bin_genotype=bin_list).cuda()#.cpu()
-        count_parameters(modelo)
-        return modelo
     # if model_name == "teste":
-    #     modelo = NestedUNet(num_classes=1, input_channels=3, deep_supervision=False).cuda()#.cpu()
+    #     bin_list = [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1]
+    #     # print(len(bin_list))
+    #     modelo = GAUNet(num_classes=1,input_channels=3,mid_channels=20,bin_genotype=bin_list).cuda()#.cpu()
     #     count_parameters(modelo)
     #     return modelo
+    if model_name == "teste":
+        modelo = NestedUNet(num_classes=1, input_channels=3, deep_supervision=False).cuda()#.cpu()
+        count_parameters(modelo)
+        return modelo
     # if model_name == 'pixelformer':
     #     return PixelFormer(version="base07", inv_depth=True, max_depth=10, 
     #     pretrained="C:/Users/luizg/Documents/repositorios/GuidedDecoding/model/weights/swin_transformer/swin_base_patch4_window7_224_22k.pth")

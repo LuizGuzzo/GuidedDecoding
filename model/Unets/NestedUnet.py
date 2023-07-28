@@ -54,35 +54,35 @@ class NestedUNet(nn.Module):
 
 
 
-        self.conv0_1 = ConvBlock_dwise(nb_filter[0]+nb_filter[1], nb_filter[0])
-        self.conv1_1 = ConvBlock_dwise(nb_filter[1]+nb_filter[2], nb_filter[1])
-        self.conv2_1 = ConvBlock_dwise(nb_filter[2]+nb_filter[3], nb_filter[2])
-        self.conv3_1 = ConvBlock_dwise(nb_filter[3]+nb_filter[4], nb_filter[3])
-        self.conv4_1 = ConvBlock_dwise(nb_filter[4]+nb_filter[5], nb_filter[4])
+        self.conv0_1 = ConvBlock(nb_filter[0]+nb_filter[1], nb_filter[0])
+        self.conv1_1 = ConvBlock(nb_filter[1]+nb_filter[2], nb_filter[1])
+        self.conv2_1 = ConvBlock(nb_filter[2]+nb_filter[3], nb_filter[2])
+        self.conv3_1 = ConvBlock(nb_filter[3]+nb_filter[4], nb_filter[3])
+        self.conv4_1 = ConvBlock(nb_filter[4]+nb_filter[5], nb_filter[4])
 
-        self.conv0_2 = ConvBlock_dwise(nb_filter[0]*2+nb_filter[1], nb_filter[0])
-        self.conv1_2 = ConvBlock_dwise(nb_filter[1]*2+nb_filter[2], nb_filter[1])
-        self.conv2_2 = ConvBlock_dwise(nb_filter[2]*2+nb_filter[3], nb_filter[2])
-        self.conv3_2 = ConvBlock_dwise(nb_filter[3]*2+nb_filter[4], nb_filter[3])
+        self.conv0_2 = ConvBlock(nb_filter[0]*2+nb_filter[1], nb_filter[0])
+        self.conv1_2 = ConvBlock(nb_filter[1]*2+nb_filter[2], nb_filter[1])
+        self.conv2_2 = ConvBlock(nb_filter[2]*2+nb_filter[3], nb_filter[2])
+        self.conv3_2 = ConvBlock(nb_filter[3]*2+nb_filter[4], nb_filter[3])
 
-        self.conv0_3 = ConvBlock_dwise(nb_filter[0]*3+nb_filter[1], nb_filter[0])
-        self.conv1_3 = ConvBlock_dwise(nb_filter[1]*3+nb_filter[2], nb_filter[1])
-        self.conv2_3 = ConvBlock_dwise(nb_filter[2]*3+nb_filter[3], nb_filter[2])
+        self.conv0_3 = ConvBlock(nb_filter[0]*3+nb_filter[1], nb_filter[0])
+        self.conv1_3 = ConvBlock(nb_filter[1]*3+nb_filter[2], nb_filter[1])
+        self.conv2_3 = ConvBlock(nb_filter[2]*3+nb_filter[3], nb_filter[2])
 
-        self.conv0_4 = ConvBlock_dwise(nb_filter[0]*4+nb_filter[1], nb_filter[0])
-        self.conv1_4 = ConvBlock_dwise(nb_filter[1]*4+nb_filter[2], nb_filter[1])
+        self.conv0_4 = ConvBlock(nb_filter[0]*4+nb_filter[1], nb_filter[0])
+        self.conv1_4 = ConvBlock(nb_filter[1]*4+nb_filter[2], nb_filter[1])
 
-        self.conv0_5 = ConvBlock_dwise(nb_filter[0]*5+nb_filter[1], nb_filter[0])
+        self.conv0_5 = ConvBlock(nb_filter[0]*5+nb_filter[1], nb_filter[0])
 
 
         if self.deep_supervision:
-            self.final1 = ConvBlock_dwise(nb_filter[0], num_classes)
-            self.final2 = ConvBlock_dwise(nb_filter[0], num_classes)
-            self.final3 = ConvBlock_dwise(nb_filter[0], num_classes)
-            self.final4 = ConvBlock_dwise(nb_filter[0], num_classes)
-            self.final5 = ConvBlock_dwise(nb_filter[0], num_classes)
+            self.final1 = ConvBlock(nb_filter[0], num_classes)
+            self.final2 = ConvBlock(nb_filter[0], num_classes)
+            self.final3 = ConvBlock(nb_filter[0], num_classes)
+            self.final4 = ConvBlock(nb_filter[0], num_classes)
+            self.final5 = ConvBlock(nb_filter[0], num_classes)
         else:
-            self.final = ConvBlock_dwise(nb_filter[0], num_classes) # point-wise
+            self.final = ConvBlock(nb_filter[0], num_classes) # point-wise
 
 
     def forward(self, input):

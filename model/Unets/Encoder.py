@@ -8,10 +8,11 @@ class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
         backbone_nn = models.mobilenet_v2(pretrained=True) 
+        freeze = True
 
         print("NOT freezing backbone layers - ",type(backbone_nn).__name__)
         for param in backbone_nn.parameters():
-            param.requires_grad = True
+            param.requires_grad = not freeze # precisa ser False para congelar
 
         count_parameters(backbone_nn)
         self.original_model = backbone_nn
